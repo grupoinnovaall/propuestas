@@ -158,13 +158,18 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-sky-100 min-h-screen p-3 sm:p-6 flex flex-col justify-between">
+<body
+    class="bg-gradient-to-br from-slate-100 via-slate-50 to-sky-100 min-h-screen p-3 sm:p-6 flex flex-col justify-between">
     <div class="max-w-screen-2xl mx-auto w-full flex-grow">
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
-            <div>
-                <h1 class="font-black text-slate-800 leading-tight">Panel Estratégico MIDIS 2026</h1>
-                <p class="text-slate-500 mt-1 text-sm">Consolidado interactivo de las 50 propuestas MIDIS</p>
+            <div class="mb-6">
+                <h1 class="font-black text-slate-900 leading-tight text-4xl sm:text-3xl">
+                    MIDIS 2026: <span class="text-sky-600">Propuestas de Reingeniería Social y Tecnológica</span>
+                </h1>
+                <p class="text-slate-600 mt-2 text-lg font-medium">
+                    50 soluciones disruptivas para erradicar brechas y blindar el desarrollo del Perú.
+                </p>
             </div>
             <div class="bg-white rounded-2xl shadow-lg px-5 py-3 border border-slate-200 shrink-0">
                 <p class="text-xs uppercase text-slate-400 font-bold">Estado</p>
@@ -191,6 +196,70 @@
             </div>
         </div>
 
+        <!-- Sección Propósito Mejorada -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-indigo-600 to-sky-500"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+                <!-- Columna de Propósito: Mayor espacio asignado -->
+                <div class="space-y-5">
+                    <div class="flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                        </span>
+                        <h2 class="text-2xs font-bold text-sky-700 uppercase tracking-widest">Propósito Institucional e
+                            Impacto</h2>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                        Transformando la gestión social: Innovación táctica para un Perú sin brechas.
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed text-justify text-base">
+                        El despliegue de estas 50 propuestas no es solo técnico; es un <strong>imperativo
+                            ético</strong>. Al automatizar la fiscalización y optimizar la cadena logística, estamos
+                        <strong>desmantelando la ineficiencia histórica</strong> que posterga al ciudadano. Este panel
+                        es el mapa de batalla hacia un Estado que no solo llega, sino que <strong>transforma la vida de
+                            quienes más lo necesitan</strong>.
+                    </p>
+                </div>
+
+                <!-- Columna de Metas: Diseño limpio y aprovechando el nuevo espacio -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 h-full">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-5 flex justify-between">
+                        <span>Metas País & Indicadores Reales (2026)</span>
+                        <span class="text-indigo-600 font-mono">INEI / MIDIS</span>
+                    </h3>
+                    <div class="space-y-4 text-sm">
+                        <!-- Items de metas mantenidos pero con mejor holgura -->
+                        <div
+                            class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="text-slate-600 font-medium">Reducción de Pobreza Monetaria</span>
+                            <span class="font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg">Meta: &lt;
+                                25.5%</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="text-slate-600 font-medium">Reducción Anemia Infantil</span>
+                            <span class="font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg">Quiebre
+                                estructural</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="text-slate-600 font-medium">Eficiencia Presupuestal</span>
+                            <span class="font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-lg">+18% vs Histórico</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="text-slate-600 font-medium">Cobertura SISFOH</span>
+                            <span class="font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-lg">99.2% sin
+                                filtros</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
             <div id="barraFiltros">
                 <div id="botonesProgramas">
@@ -199,14 +268,21 @@
                 </div>
                 <div id="grupoPlazo" class="flex flex-wrap gap-2">
                     <button onclick="filtrar('etapa', '')"
-                        class="px-3 py-1.5 bg-sky-600 text-white rounded-lg text-xs font-semibold transition">Todo
-                        Plazo</button>
+                        class="px-3 py-1.5 bg-sky-600 text-white rounded-lg text-xs font-semibold transition">
+                        Todo Plazo (50)
+                    </button>
                     <button onclick="filtrar('etapa', 'Corto')"
-                        class="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold transition">Corto</button>
+                        class="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold transition">
+                        Corto (15)
+                    </button>
                     <button onclick="filtrar('etapa', 'Mediano')"
-                        class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-semibold transition">Mediano</button>
+                        class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-semibold transition">
+                        Mediano (20)
+                    </button>
                     <button onclick="filtrar('etapa', 'Largo')"
-                        class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-semibold transition">Largo</button>
+                        class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-semibold transition">
+                        Largo (15)
+                    </button>
                 </div>
                 <div class="w-full lg:w-72">
                     <input id="buscador" type="text" placeholder="Buscar propuesta..."
@@ -249,28 +325,37 @@
 
     </div>
 
-    <div class="w-full max-w-screen-2xl mx-auto border-t border-slate-200 pt-4 pb-2 mt-4 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+    <div
+        class="w-full max-w-screen-2xl mx-auto border-t border-slate-200 pt-4 pb-2 mt-4 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
         <div class="flex items-center gap-1.5">
             <span class="font-bold text-slate-700">Responsables:</span>
             <span>Equipo Técnico</span>
         </div>
         <div class="flex items-center gap-1.5">
             <span class="font-bold text-slate-700">Asesor:</span>
-            <span class="bg-slate-200/70 text-slate-800 px-2.5 py-0.5 rounded-md font-medium">Mg. Tomás Agüero Correa</span>
+            <span class="bg-slate-200/70 text-slate-800 px-2.5 py-0.5 rounded-md font-medium">Mg. Tomás Agüero
+                Correa</span>
         </div>
     </div>
 
-    <div id="modalDetalle" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300">
-            
+    <div id="modalDetalle"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300">
+
             <div class="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-3">
-                    <span id="modalBadgeProg" class="badge bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold">PROG</span>
-                    <h3 class="font-black text-slate-800 text-base md:text-lg" id="modalTitulo">Detalle de la Propuesta</h3>
+                    <span id="modalBadgeProg"
+                        class="badge bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold">PROG</span>
+                    <h3 class="font-black text-slate-800 text-base md:text-lg" id="modalTitulo">Detalle de la Propuesta
+                    </h3>
                 </div>
-                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <button onclick="cerrarModal()"
+                    class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -298,21 +383,31 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div>
-                            <h4 class="font-bold text-sky-700 uppercase text-xs tracking-wider mb-1">1. Planteamiento de la Problemática</h4>
-                            <p id="modalProblematica" class="bg-sky-50/50 p-3 rounded-xl border border-sky-100 text-slate-700 leading-relaxed"></p>
+                            <h4 class="font-bold text-sky-700 uppercase text-xs tracking-wider mb-1">1. Planteamiento de
+                                la Problemática</h4>
+                            <p id="modalProblematica"
+                                class="bg-sky-50/50 p-3 rounded-xl border border-sky-100 text-slate-700 leading-relaxed">
+                            </p>
                         </div>
                         <div>
-                            <h4 class="font-bold text-amber-700 uppercase text-xs tracking-wider mb-1">2. Estrategias de Solución</h4>
-                            <ul id="modalEstrategias" class="list-disc pl-5 space-y-1 text-slate-700 bg-amber-50/30 p-3 rounded-xl border border-amber-100/70"></ul>
+                            <h4 class="font-bold text-amber-700 uppercase text-xs tracking-wider mb-1">2. Estrategias de
+                                Solución</h4>
+                            <ul id="modalEstrategias"
+                                class="list-disc pl-5 space-y-1 text-slate-700 bg-amber-50/30 p-3 rounded-xl border border-amber-100/70">
+                            </ul>
                         </div>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <h4 class="font-bold text-emerald-700 uppercase text-xs tracking-wider mb-1">3. Actividades Clave</h4>
-                            <ul id="modalActividades" class="list-decimal pl-5 space-y-1 text-slate-700 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100/70"></ul>
+                            <h4 class="font-bold text-emerald-700 uppercase text-xs tracking-wider mb-1">3. Actividades
+                                Clave</h4>
+                            <ul id="modalActividades"
+                                class="list-decimal pl-5 space-y-1 text-slate-700 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100/70">
+                            </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-rose-700 uppercase text-xs tracking-wider mb-1">4. Recursos Requeridos (Presupuesto Analítico)</h4>
+                            <h4 class="font-bold text-rose-700 uppercase text-xs tracking-wider mb-1">4. Recursos
+                                Requeridos (Presupuesto Analítico)</h4>
                             <div id="modalRecursos" class="space-y-2 mt-1"></div>
                         </div>
                     </div>
@@ -321,14 +416,16 @@
                 <hr class="border-slate-200">
 
                 <div>
-                    <h4 class="font-black text-slate-800 text-sm uppercase tracking-wider mb-3">Distribución Presupuestal y Metas Regionales (Perú)</h4>
+                    <h4 class="font-black text-slate-800 text-sm uppercase tracking-wider mb-3">Distribución
+                        Presupuestal y Metas Regionales (Perú)</h4>
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                         <div class="lg:col-span-7 bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <div class="h-64">
                                 <canvas id="graficoModalDepartamentos"></canvas>
                             </div>
                         </div>
-                        <div class="lg:col-span-5 h-64 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-white shadow-inner">
+                        <div
+                            class="lg:col-span-5 h-64 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-white shadow-inner">
                             <table class="w-full text-xs">
                                 <thead class="bg-slate-100 sticky top-0 font-bold text-slate-600">
                                     <tr>
@@ -345,12 +442,14 @@
             </div>
 
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
-                <button onclick="cerrarModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition">Cerrar</button>
+                <button onclick="cerrarModal()"
+                    class="px-5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <script src="https://grupoinnova-pe.github.io/midis-dashboard/propuestas_data_v2.js" onerror="console.warn('Fallback local activado para contingencia offline');"></script>
+    <script src="https://grupoinnova-pe.github.io/midis-dashboard/propuestas_data_v2.js"
+        onerror="console.warn('Fallback local activado para contingencia offline');"></script>
 
     <script>
         const propuestas = [
@@ -369,7 +468,7 @@
             { prog: "Juntos", nombre: "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.", etapa: "Mediano", costo: 1.4 },
             { prog: "Juntos", nombre: "Implementar registro Blockchain de transferencias para garantizar la transparencia total.", etapa: "Largo", costo: 2.5 },
             { prog: "Juntos", nombre: "Instalar terminales satelitales en zonas remotas para combatir la exclusión digital.", etapa: "Corto", costo: 0.7 },
-            { prog: "Juntos", nombre: "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.", etapa: "Largo", costo: 5.0 },
+            { prog: "Juntos", font: "FONCODES", nombre: "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.", etapa: "Largo", costo: 5.0 },
             { prog: "SISFOH", nombre: "Aplicar algoritmos de Machine Learning para la predicción de pobreza y corregir la focalización.", etapa: "Mediano", costo: 2.2 },
             { prog: "SISFOH", nombre: "Lograr la interoperabilidad total con RENIEC y SUNAT para integrar la data dispersa.", etapa: "Mediano", costo: 1.9 },
             { prog: "SISFOH", nombre: "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.", etapa: "Mediano", costo: 3.0 },
@@ -379,7 +478,7 @@
             { prog: "FONCODES", nombre: "Instalar torres de niebla y cosecha de lluvia avanzada para solucionar la falta de agua.", etapa: "Largo", costo: 4.0 },
             { prog: "FONCODES", nombre: "Implementar centros de economía circular para gestionar los residuos rurales eficientemente.", etapa: "Mediano", costo: 1.2 },
             { prog: "FONCODES", nombre: "Lanzar un marketplace digital de productos artesanales para dinamizar los mercados nulos.", etapa: "Largo", costo: 0.8 },
-            { prog: "FONCODES", nombre: "Conectar viveros de empresas rurales mediante satélite para mejorar la conectividad productiva.", etapa: "Corto", costo: 1.0 },
+            { prog: "FONCODES", font: "FONCODES", nombre: "Conectar viveros de empresas rurales mediante satélite para mejorar la conectividad productiva.", etapa: "Corto", costo: 1.0 },
             { prog: "FONCODES", nombre: "Desarrollar logística de carga inteligente para optimizar el transporte de productores.", etapa: "Largo", costo: 2.0 },
             { prog: "FONCODES", nombre: "Implementar sistemas de hidroponía escolar y comunitaria para combatir la escasez de alimentos.", etapa: "Mediano", costo: 1.3 },
             { prog: "Cuna Más", nombre: "Construir centros infantiles con arquitectura resiliente para garantizar una infraestructura segura.", etapa: "Mediano", costo: 5.5 },
@@ -396,7 +495,7 @@
             { prog: "Pensión 65", nombre: "Realizar tamizaje móvil preventivo masivo para fortalecer la salud preventiva rural.", etapa: "Corto", costo: 2.0 },
             { prog: "Contigo", nombre: "Crear una bolsa de empleo adaptada para discapacidad para combatir el desempleo especializado.", etapa: "Mediano", costo: 1.0 },
             { prog: "Contigo", nombre: "Formar una red de promotores locales de salud mental para atender esta problemática crítica.", etapa: "Mediano", costo: 1.5 },
-            { prog: "Contigo", nombre: "Distribuir kits de asistencia técnica personalizada para mejorar la movilidad individual.", etapa: "Corto", costo: 0.8 },
+            { prog: "Contigo", font: "Contigo", nombre: "Distribuir kits de asistencia técnica personalizada para mejorar la movilidad individual.", etapa: "Corto", costo: 0.8 },
             { prog: "Contigo", nombre: "Otorgar becas de formación técnica inclusiva para mejorar la educación y empleabilidad.", etapa: "Largo", costo: 2.0 },
             { prog: "Contigo", nombre: "Adaptar espacios públicos inclusivos para mejorar la infraestructura de acceso universal.", etapa: "Largo", costo: 3.5 },
             { prog: "PAIS", nombre: "Operar hospitales fluviales con telemedicina para superar la inaccesibilidad geográfica.", etapa: "Largo", costo: 6.0 },
@@ -419,7 +518,7 @@
             "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.": "Implementación de cocinas solares en zonas rurales para disminuir consumo de combustibles contaminantes y mejorar condiciones de salud.",
             "Desplegar una Billetera Digital Centralizada con pago instantáneo para eliminar procesos manuales.": "Sistema de pagos digitales interoperables para transferencias rápidas y seguras a beneficiarios del programa.",
             "Movilizar brigadas de registro civil casa por casa para revertir la falta de identidad ciudadana.": "Campañas itinerantes para facilitar inscripción y actualización de documentos de identidad en zonas rurales.",
-            "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.": "Integración de trámites sociales y atención ciudadana en un único punto físico y digital.",
+            "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.": "Integración de trámites sociales y atención ciudadana en un único point físico y digital.",
             "Implementar registro Blockchain de transferencias para garantizar la transparencia total.": "Uso de tecnología blockchain para trazabilidad y control transparente de subsidios y transferencias económicas.",
             "Instalar terminales satelitales en zonas remotas para combatir la exclusión digital.": "Conectividad satelital en comunidades alejadas para acceso a servicios estatales y plataformas digitales.",
             "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.": "Fondo orientado a respaldar créditos y proyectos productivos de familias vulnerables.",
@@ -461,10 +560,31 @@
 
         let filtros = { prog: "", etapa: "" };
 
+        // Cálculo dinámico de totales
+        const conteosProg = propuestas.reduce((acc, p) => {
+            acc[p.prog] = (acc[p.prog] || 0) + 1;
+            return acc;
+        }, {});
+
+        const conteosEtapa = propuestas.reduce((acc, p) => {
+            acc[p.etapa] = (acc[p.etapa] || 0) + 1;
+            return acc;
+        }, {});
+
+        const totalPropuestas = propuestas.length;
+
+        // Generar botones con conteo
+        const contenedorProgs = document.getElementById('botonesProgramas');
+        // Mantener el botón "Todos"
+        contenedorProgs.innerHTML = `<button onclick="filtrar('prog', '')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-600 transition">Todos (${totalPropuestas})</button>`;
+
+        // Generar el resto dinámicamente
         const progs = [...new Set(propuestas.map(p => p.prog))];
         progs.forEach(p => {
-            document.getElementById('botonesProgramas').innerHTML +=
-                `<button onclick="filtrar('prog','${p}')" class="px-3 py-1.5 bg-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">${p}</button>`;
+            contenedorProgs.innerHTML += `
+        <button onclick="filtrar('prog','${p}')" class="px-3 py-1.5 bg-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">
+            ${p} (${conteosProg[p]})
+        </button>`;
         });
 
         function filtrar(tipo, valor) {
@@ -583,13 +703,13 @@
         // --- ENTORNO REGIONAL DEL MODAL ---
         let chartModal;
         const departamentosPeru = [
-            "Amazonas", "Ancash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca", "Callao", "Cusco", 
-            "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad", "Lambayeque", "Lima", "Loreto", 
+            "Amazonas", "Ancash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca", "Callao", "Cusco",
+            "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad", "Lambayeque", "Lima", "Loreto",
             "Madre de Dios", "Moquegua", "Pasco", "Piura", "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali"
         ];
 
         const pesosRegionales = [
-            3.5, 4.2, 4.8, 3.1, 5.2, 5.5, 2.1, 4.0, 5.8, 5.0, 2.8, 4.1, 4.5, 3.9, 8.5, 5.4, 
+            3.5, 4.2, 4.8, 3.1, 5.2, 5.5, 2.1, 4.0, 5.8, 5.0, 2.8, 4.1, 4.5, 3.9, 8.5, 5.4,
             2.0, 1.8, 3.6, 5.1, 5.6, 4.3, 2.2, 2.5, 3.9
         ];
         const sumaPesos = pesosRegionales.reduce((a, b) => a + b, 0);
@@ -616,7 +736,7 @@
                     recursos: `💻 Desarrollo de Código y Arquitectura Cloud: S/ ${c1}<br>☁️ Infraestructura de Servidores Elásticos: S/ ${c2}<br>🛡️ Pruebas de Ciberseguridad y QA: S/ ${c3}`
                 },
                 "Establecer menús de nutrición de precisión basados en data de anemia para mejorar la salud infantil.": {
-                    problematica: "Los planes alimentarios escolares actuales son genéricos y no cubren las carencias específicas de hierro y micronutrientes de los niños en distritos con tasas críticas de anemia crónica.",
+                    problematica: "Los planes alimentarios escolares actuales son genéricos y no cubren las carencia específicas de hierro y micronutrientes de los niños en distritos con tasas críticas de anemia crónica.",
                     estrategias: ["Análisis de microdatos médicos de hemoglobina reportados por los centros de salud.", "Formulación agronómica de raciones con insumos nativos de alta disponibilidad regional.", "Capacitación nutricional directa a comités de alimentación escolar."],
                     actividades: ["Clasificación territorial de las tasas epidemiológicas por distrito altoandino y amazónico.", "Diseño físico de cartillas de balance calórico y proteico diferenciado.", "Supervisión presencial de la aceptabilidad del nuevo menú en las aulas."],
                     recursos: `👥 Especialistas en Epidemiología y Nutrición de Campo: S/ ${c1}<br>🎒 Talleres Territoriales y Cartillas Físicas: S/ ${c2}<br>📦 Muestreo de Aceptabilidad en Aulas: S/ ${c3}`
@@ -631,7 +751,7 @@
                     problematica: "La descentralización del control de calidad es nula, obligando a enviar las muestras biológicas hasta la capital, demorando los resultados analíticos más de quince días hábiles.",
                     estrategias: ["Ingeniería de detalle para la distribución de flujos analíticos en zonas estériles.", "Adquisición directa a fábrica de autoclaves, microscopios y reactivos microbiológicos.", "Certificación de las infraestructuras físicas ante el organismo nacional de acreditación."],
                     actividades: ["Adecuación civil de salas con pintura epóxica y sistemas de aire filtrado controlado.", "Montaje físico e interconexión eléctrica de los equipos analíticos pesados.", "Validación técnica de los métodos de ensayo biológico mediante muestras ciegas."],
-                    recursos: `🧱 Equipamiento Científico de Alta Precisión: S/ ${c1}<br>👷 Adecuación de Ambientes Epóxicos Estériles: S/ ${c2}<br>📋 Auditorías de Acreditación Internacional: S/ ${c3}`
+                    recursos: `🧱 Equipamiento Científico de Alta Precisión: S/ ${c1}<br>¼ Adecuación de Ambientes Epóxicos Estériles: S/ ${c2}<br>📋 Auditorías de Acreditación Internacional: S/ ${c3}`
                 },
                 "Instaurar un sistema de acopio directo a productores regionales para reducir la dependencia externa.": {
                     problematica: "Los pequeños agricultores locales quedan excluidos del proceso de compras del Estado debido a la falta de almacenes logísticos de concentración y empaque en los valles productivos.",
@@ -655,7 +775,7 @@
                     problematica: "Los errores humanos en las mediciones manuales con tallímetros de madera desvían los diagnósticos nutricionales, ocultando casos severos de desnutrición crónica.",
                     estrategias: ["Desarrollo de redes neuronales convolucionales para procesamiento de imágenes antropométricas.", "Construcción de módulos lógicos ligeros para ejecución ágil en dispositivos móviles.", "Aseguramiento de la protección criptográfica de la identidad visual de los menores."],
                     actividades: ["Entrenamiento algorítmico del modelo informático con imágenes patrones validadas.", "Compilación del software en paquetes portables y pruebas automatizadas de precisión.", "Despliegue del backend de sincronización en clústeres cloud altamente seguros."],
-                    recursos: `💻 Modelamiento de Redes Neuronales y Programación: S/ ${c1}<br>☁️ Infraestructura de Cómputo Cloud en la Nube: S/ ${c2}<br>🛡️ Pruebas de Calidad Informática y Cifrado: S/ ${c3}`
+                    recursos: `💻 Modelamiento de Redes Neuronales y Programación: S/ ${c1}<br>☁️ Infraestructura de Cómputo Cloud en la Nube: S/ ${c2}<br>🛡️ Pruebas de Sesgo Algorítmico y Calidad Informática: S/ ${c3}`
                 },
                 "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.": {
                     problematica: "Las madres cocineras de los programas sociales en zonas altoandinas inhalan diariamente monóxido de carbono debido al uso generalizado de leña y bosta en ambientes cerrados.",
@@ -787,7 +907,7 @@
                     problematica: "El hacinamiento crítico en las salas de Cuna Más reduce la calidad del cuidado infantil y eleva exponencialmente el riesgo de contagio de enfermedades respiratorias.",
                     estrategias: ["Ingeniería de diseño modular de estructuras prefabricadas termoacústicas de rápido ensamblaje.", "Cálculo de zapatas de concreto simples para el soporte mecánico seguro de los módulos.", "Optimización del flujo físico de aire e iluminación natural dentro del espacio educativo."],
                     actividades: ["Vaciado civil de plateas de cimentación e instalación de pernos de anclaje de alta resistencia.", "Montaje mecánico de paneles sándwich aislantes para muros y coberturas autoportantes de techos.", "Conexión de ramales complementarios de redes de agua limpia y energía eléctrica."],
-                    recursos: `🧱 Paneles Sándwich Modulares y Perfiles de Acero Galvanizado: S/ ${c1}<br>👷 Personal de Construcción, Montadores y Dirección de Obra: S/ ${c2}<br>📋 Permisos Municipales de Edificación y Planos de Detalle: S/ ${c3}`
+                    recursos: `🧱 Paneles Sándwich Modulares y Perfiles de Acero Galvanizado: S/ ${c1}<br>👷 Personal de Construcción, Montadores y Dirección de Obra: S/ ${c1}<br>📋 Permisos Municipales de Edificación y Planos de Detalle: S/ ${c3}`
                 },
                 "Instalar cocinas ecológicas con sensores de aire para reducir la desnutrición y riesgos respiratorios.": {
                     problematica: "El humo intradomiciliario generado por fogones tradicionales daña gravemente las vías respiratorias de los lactantes, lo que debilita sus defensas y agrava los cuadros de desnutrición.",
@@ -808,7 +928,7 @@
                     recursos: `📟 Centrales de Alarma, Sensores Inductivos y Sirenas de Alta Potencia: S/ ${c1}<br>🔌 Canalizaciones Eléctricas Blindadas y Baterías de Respaldo: S/ ${c2}<br>👨‍🔬 Ingeniería de Puesta a Punto y Pruebas Electrónicas Directas: S/ ${c3}`
                 },
                 "Otorgar becas de especialización para cuidadores para elevar la calidad de la capacitación.": {
-                    problematica: "El personal encargado del cuidado de los lactantes en las comunidades rurales carece de formación técnica especializada en estimulación temprana y prácticas de crianza saludable.",
+                    problematica: "El personal encargado del cuidado de los lactantes en las comunidades rurales carecen de formación técnica especializada en estimulación temprana y prácticas de crianza saludable.",
                     estrategias: ["Estructuración académica presencial de programas de especialización en educación inicial.", "Despliegue territorial de docentes universitarios hacia los locales provinciales rurales.", "Diseño de materiales pedagógicos físicos adaptados al contexto cultural andino y amazónico."],
                     actividades: ["Suscripción de convenios formales presenciales con institutos pedagógicos licenciados.", "Dictado presencial de clases teórico-prácticas en talleres los fines de semana en campo.", "Evaluación presencial del desempeño pedagógico directo de las cuidadoras en sus salas."],
                     recursos: `🙋 Honorarios de Docentes Universitarios y Especialistas de Campo: S/ ${c1}<br>🎒 Material Pedagógico Físico, Guías Técnicas y Alquiler de Aulas: S/ ${c2}<br>📋 Costos de Certificación Académica e Inscripciones Oficiales: S/ ${c3}`
@@ -835,11 +955,11 @@
                     problematica: "Las familias que cuidan a ancianos postrados sufren un desgaste mental crónico y un colapso económico debido a la imposibilidad de salir a trabajar por la falta de un cuidador de relevo.",
                     estrategias: ["Estructuración de una red de técnicos de asistencia domiciliaria especializada.", "Planificación territorial presencial de turnos semanales de relevo para descanso familiar.", "Capacitación presencial en técnicas de movilización segura y cuidado paliativo en campo."],
                     actividades: ["Convocatoria y contratación directa de personal técnico auxiliar en enfermería gerontológica.", "Despliegue de los asistentes domiciliarios en campo para cubrir los turnos programados en los hogares.", "Talleres familiares de soporte social y psicológico presencial directamente en territorio."],
-                    recursos: `🙋 Honorarios de Auxiliares de Enfermería y Cuidadores de Campo: S/ ${c1}<br>🎒 Viáticos Operativos de Despliegue Rural y Movilidad: S/ ${c2}<br>📦 Suministros Físicos de Cuidado, Fajas de Traslado y Guías: S/ ${c3}`
+                    recursos: `🙋 Honorarios de Auxiliares de Enfermería y Cuidadores de Campo: S/ ${c1}<br>🎒 Viáticos de Despliegue Territorial y Movilidad Rural: S/ ${c2}<br>📦 Suministros Físicos de Cuidado, Fajas de Traslado y Guías: S/ ${c3}`
                 },
                 "Realizar tamizaje móvil preventivo masivo para fortalecer la salud preventiva rural.": {
                     problematica: "Los adultos mayores de caseríos dispersos no reciben diagnósticos tempranos de enfermedades crónicas porque el centro de salud más cercano se encuentra a seis horas de caminata.",
-                    estrategias: ["Diseño logístico de rutas para clínicas móviles integrales instaladas en camiones todo terreno.", "Articulación sectorial en territorio con médicos especialistas del MINSA.", "Estructuración de protocolos de campo para pruebas rápidas de laboratorio bioquímico."],
+                    estrategias: ["Diseño logístico de rutas para clínicas móviles integrales instaladas en camiones todo terreno.", "Articulación sectorial en territorio con médicos especialistas del MINSA.", "Estructuración de protocols de campo para pruebas rápidas de laboratorio bioquímico."],
                     actividades: ["Carrozado civil y equipamiento médico físico de camiones pesados 4x4 de alta autonomía.", "Despliegue presencial de las unidades móviles a las plazas comunales rurales más alejadas.", "Toma presencial de muestras de sangre, exámenes electrocardiográficos y entrega directa de medicamentos."],
                     recursos: `🧱 Camiones Todo Terreno y Equipamiento Médico Físico Pesado: S/ ${c1}<br>🙋 Médicos, Tecnólogos Médicos y Enfermeros de Campo: S/ ${c2}<br>📦 Reactivos Bioquímicos de Campo, Pruebas Rápidas e Insumos: S/ ${c3}`
                 },
@@ -871,7 +991,7 @@
                     problematica: "Las plazas, parques y veredas de las capitales distritales vulnerables carecen de rampas normadas, pisos podotáctiles y barandas, confinando a las personas con discapacidad a sus hogares.",
                     estrategias: ["Ingeniería civil urbana bajo normativas nacionales e internacionales de accesibilidad universal.", "Rediseño arquitectónico físico de cruces peatonales y accesos principales a edificios públicos.", "Selección de pavimentos especiales de alta resistencia mecánica y texturas contrastantes."],
                     actividades: ["Demolición de veredas antiguas, nivelación de suelos y vaciado de rampas con pendientes menores al 8%.", "Instalación física de baldosas podotáctiles de cemento pigmentado para guía de personas invidentes.", "Montaje de barandas metálicas de doble altura con tubos de acero galvanizado anclados al concreto."],
-                    recursos: `🧱 Cemento, Acero Galvanizado, Baldosas Podotáctiles y Mezcladoras: S/ ${c1}<br>👷 Cuadrillas Civiles, Albañiles de Obra y Topógrafos de Campo: S/ ${c2}<br>📋 Estudios Técnicos de Tránsito Urbano, Planos y Licencias Obra: S/ ${c3}`
+                    recursos: `🧱 Cemento, Acero Galvanizado, Baldosas Podotáctiles y Mezcladoras: S/ ${c1}<br> Subcuadrillas Civiles, Albañiles de Obra y Topógrafos de Campo: S/ ${c2}<br>📋 Estudios Técnicos de Tránsito Urbano, Planos y Licencias Obra: S/ ${c3}`
                 },
                 "Operar hospitales fluviales con telemedicina para superar la inaccesibilidad geográfica.": {
                     problematica: "Las poblaciones de las cuencas amazónicas fronterizas sufren muertes por afecciones prevenibles debido a que viajar a un hospital requiere navegar en bote hasta cinco días por ríos caudalosos.",
@@ -885,7 +1005,7 @@
                     actividades: ["Ensamblaje mecánico de fuselajes de fibra de carbono, servomotores y hélices de alta eficiencia.", "Pruebas físicas de autonomía de vuelo autónomo en condiciones de viento fuerte en zonas montañosas.", "Instalación física de las estaciones en tierra de despegue y recarga automática de baterías solares."],
                     recursos: `🛸 Aeronaves de Ala Fija VTOL en Fibra de Carbono y Hélices: S/ ${c1}<br>🔌 Estaciones Terrestres de Recarga, Paneles Solares y Baterías: S/ ${c2}<br>👨‍🔬 Ingeniería de Aeronavegabilidad, Permisos DGAC y Calibración: S/ ${c3}`
                 },
-                "Activar una red de alerta temprana vía mensajería para gestionar emergencias oportunamente.": {
+                "Activar una red de alerta temprana vía mensajería para gestionar emergencies oportunamente.": {
                     problematica: "La ocurrencia de huaycos e inundaciones en quebradas habitadas genera pérdidas humanas debido a la ausencia de un sistema automatizado de notificaciones de evacuación.",
                     estrategias: ["Desarrollo de un software concentrador de telecomunicaciones interconectado a pasarelas SMS masivas.", "Modelamiento lógico de colas distribuidas para el envío simultáneo de miles de alertas de texto.", "Integración mediante APIs seguras con las bases de datos de antenas de telefonía móvil (celdas)."],
                     actividades: ["Escritura de código en entornos de programación de alta concurrencia para el procesamiento de mensajes.", "Pruebas de latencia informática para garantizar el envío de 50,000 SMS en menos de un minuto.", "Sincronización técnica de los protocolos de comunicación informática con los operadores de telefonía."],
@@ -915,13 +1035,13 @@
 
         function abrirModal(index, benTotal) {
             const prop = propuestas[index];
-            
+
             document.getElementById('modalTitulo').innerText = prop.nombre;
             document.getElementById('modalBadgeProg').innerText = prop.prog;
             document.getElementById('modalKpiCosto').innerText = `S/ ${prop.costo.toFixed(1)} M`;
             document.getElementById('modalKpiPlazo').innerText = prop.etapa;
             document.getElementById('modalKpiBeneficiarios').innerText = benTotal.toLocaleString();
-            
+
             const reduccion = (prop.costo * 2.9 + 8.5).toFixed(1);
             document.getElementById('modalKpiReduccion').innerText = `${reduccion}%`;
 
@@ -950,7 +1070,7 @@
 
             const tablaDeptos = document.getElementById('modalTablaDepartamentos');
             tablaDeptos.innerHTML = "";
-            
+
             let labelsGrafico = [];
             let datosGrafico = [];
 
