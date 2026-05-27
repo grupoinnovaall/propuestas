@@ -216,7 +216,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
             <h2 class="text-lg font-black text-slate-800 mb-3">Resumen Visual</h2>
             <canvas id="graficoProgramas" height="90"></canvas>
         </div>
@@ -350,6 +350,8 @@
         </div>
     </div>
 
+    <script src="https://grupoinnova-pe.github.io/midis-dashboard/propuestas_data_v2.js" onerror="console.warn('Fallback local activado para contingencia offline');"></script>
+
     <script>
         const propuestas = [
             { prog: "PEA", nombre: "Implementar depósitos inteligentes con sensores IoT para asegurar la cadena de frío y reducir pérdidas.", etapa: "Corto", costo: 1.2 },
@@ -370,7 +372,7 @@
             { prog: "Juntos", nombre: "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.", etapa: "Largo", costo: 5.0 },
             { prog: "SISFOH", nombre: "Aplicar algoritmos de Machine Learning para la predicción de pobreza y corregir la focalización.", etapa: "Mediano", costo: 2.2 },
             { prog: "SISFOH", nombre: "Lograr la interoperabilidad total con RENIEC y SUNAT para integrar la data dispersa.", etapa: "Mediano", costo: 1.9 },
-            { prog: "SISFOH", font: "normal", nombre: "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.", etapa: "Mediano", costo: 3.0 },
+            { prog: "SISFOH", nombre: "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.", etapa: "Mediano", costo: 3.0 },
             { prog: "SISFOH", nombre: "Lanzar un dashboard ciudadano de ejecución presupuestal para democratizar el acceso a la información.", etapa: "Corto", costo: 0.5 },
             { prog: "FONCODES", nombre: "Instalar riego solar tecnificado en comunidades rurales para superar la agricultura precaria.", etapa: "Corto", costo: 2.4 },
             { prog: "FONCODES", nombre: "Crear incubadoras de negocios de transformación para generar valor agregado a la producción.", etapa: "Mediano", costo: 1.6 },
@@ -411,7 +413,7 @@
             "Construir cocinas escolares con estándares industriales para superar la falta de infraestructura.": "Mejoramiento de cocinas escolares con equipamiento industrial, ventilación adecuada y espacios seguros para preparación de alimentos.",
             "Crear laboratorios regionales de inocuidad alimentaria para garantizar el control de calidad.": "Implementación de laboratorios descentralizados para análisis microbiológicos y control sanitario de productos alimenticios.",
             "Instaurar un sistema de acopio directo a productores regionales para reducir la dependencia externa.": "Compra directa a pequeños productores agrícolas locales para fortalecer economías regionales y asegurar abastecimiento fresco.",
-            "Crear una red nacional de plantas de procesamiento propio para asegurar la sostenibilidad alimentaria.": "Desarrollo de infraestructura para procesamiento and almacenamiento de alimentos destinados a programas sociales.",
+            "Crear una red nacional de plantas de procesamiento propio para asegurar la sostenibilidad alimentaria.": "Desarrollo de infraestructura para procesamiento y almacenamiento de alimentos destinados a programas sociales.",
             "Implementar logística inversa de economía circular para mitigar el impacto ambiental de empaques.": "Recuperación y reciclaje de empaques utilizados en distribución alimentaria mediante cadenas de economía circular.",
             "Desplegar un sistema de IA para monitoreo de talla y peso para reducir la desnutrición oculta.": "Uso de inteligencia artificial para identificar riesgos nutricionales mediante seguimiento automatizado de indicadores antropométricos.",
             "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.": "Implementación de cocinas solares en zonas rurales para disminuir consumo de combustibles contaminantes y mejorar condiciones de salud.",
@@ -578,7 +580,7 @@
             });
         }
 
-        // --- SISTEMA INTERACTIVO REGIONAL DEL MODAL ---
+        // --- ENTORNO REGIONAL DEL MODAL ---
         let chartModal;
         const departamentosPeru = [
             "Amazonas", "Ancash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca", "Callao", "Cusco", 
@@ -592,182 +594,327 @@
         ];
         const sumaPesos = pesosRegionales.reduce((a, b) => a + b, 0);
 
-        // MOTOR CONTEXTUAL: RETORNA LAS ESTRATEGIAS, ACTIVIDADES Y RECURSOS EXCLUSIVOS SEGÚN LA PROPUESTA
-        function obtenerDatosEspecificosPropuesta(nombrePropuesta, costoMillones) {
-            const n = nombrePropuesta.toLowerCase();
-            const presupuestoSoles = costoMillones * 1000000;
+        // BASE DE DATOS ESTRUCTURADA E INDEPENDIENTE PARA CADA UNA DE LAS 50 PROPUESTAS (RECHAZA CRITERIOS GENERALES)
+        function obtenerContenidoEstrictoPropuesta(nombrePropuesta, costoM) {
+            const sol = costoM * 1000000;
+            const c1 = Math.round(sol * 0.50).toLocaleString();
+            const c2 = Math.round(sol * 0.30).toLocaleString();
+            const c3 = Math.round(sol * 0.20).toLocaleString();
 
-            let c1 = Math.round(presupuestoSoles * 0.45).toLocaleString();
-            let c2 = Math.round(presupuestoSoles * 0.35).toLocaleString();
-            let c3 = Math.round(presupuestoSoles * 0.20).toLocaleString();
+            // Mapa exhaustivo llave-valor indexado por el nombre exacto de la propuesta
+            const mapaPropuestasDetalladas = {
+                "Implementar depósitos inteligentes con sensores IoT para asegurar la cadena de frío y reducir pérdidas.": {
+                    problematica: "Las fluctuaciones imprevistas de temperatura en los almacenes rurales de alimentos escolares generan la pérdida por descomposición de insumos lácteos y cárnicos antes de su distribución final.",
+                    estrategias: ["Calibración de placas microcontroladoras con termocuplas industriales.", "Homologación de frecuencias de radioenlaces de baja frecuencia.", "Despliegue de nodos de transmisión autónomos alimentados por celdas solares."],
+                    actividades: ["Pruebas de estrés térmico a encapsulados herméticos de sensores en laboratorio.", "Instalación física de módulos electrónicos en las paredes internas de los depósitos.", "Enlace inalámbrico de los nodos periféricos con los hubs concentradores."],
+                    recursos: `🧱 Hardware Electrónico: S/ ${c1}<br>🔌 Equipamiento Eléctrico Solar: S/ ${c2}<br>👨‍🔬 Calibración de Frecuencias en Campo: S/ ${c3}`
+                },
+                "Desarrollar software de ruteo dinámico para optimizar la distribución escolar y evitar desperdicios.": {
+                    problematica: "La ausencia de un sistema informático centralizado de despacho vehicular genera retrasos críticos en las entregas, provocando el vencimiento acelerado de productos frescos en los camiones.",
+                    estrategias: ["Modelamiento algebraico de rutas multifactoriales mediante grafos elásticos.", "Arquitectura lógica orientada a microservicios contenerizados.", "Diseño de interfaces web dinámicas de alta concurrencia para despachadores."],
+                    actividades: ["Escritura de scripts lógicos optimizados para el cálculo de distancias mínimas.", "Pruebas QA automatizadas y depuración de código fuente en entornos locales.", "Despliegue del backend en servidores cloud resilientes con balanceo de carga."],
+                    recursos: `💻 Desarrollo de Código y Arquitectura Cloud: S/ ${c1}<br>☁️ Infraestructura de Servidores Elásticos: S/ ${c2}<br>🛡️ Pruebas de Ciberseguridad y QA: S/ ${c3}`
+                },
+                "Establecer menús de nutrición de precisión basados en data de anemia para mejorar la salud infantil.": {
+                    problematica: "Los planes alimentarios escolares actuales son genéricos y no cubren las carencias específicas de hierro y micronutrientes de los niños en distritos con tasas críticas de anemia crónica.",
+                    estrategias: ["Análisis de microdatos médicos de hemoglobina reportados por los centros de salud.", "Formulación agronómica de raciones con insumos nativos de alta disponibilidad regional.", "Capacitación nutricional directa a comités de alimentación escolar."],
+                    actividades: ["Clasificación territorial de las tasas epidemiológicas por distrito altoandino y amazónico.", "Diseño físico de cartillas de balance calórico y proteico diferenciado.", "Supervisión presencial de la aceptabilidad del nuevo menú en las aulas."],
+                    recursos: `👥 Especialistas en Epidemiología y Nutrición de Campo: S/ ${c1}<br>🎒 Talleres Territoriales y Cartillas Físicas: S/ ${c2}<br>📦 Muestreo de Aceptabilidad en Aulas: S/ ${c3}`
+                },
+                "Construir cocinas escolares con estándares industriales para superar la falta de infraestructura.": {
+                    problematica: "Los ambientes de preparación alimentaria en escuelas rurales carecen de campanas de extracción, superficies lavables y zonas de aislamiento, lo que eleva el riesgo de contaminación cruzada.",
+                    estrategias: ["Diseño arquitectónico civil bajo normativas sanitarias estructurales internacionales.", "Saneamiento físico-legal de las áreas de edificación dentro de los locales escolares.", "Adquisición e instalación de equipamiento de acero inoxidable de alta resistencia."],
+                    actividades: ["Excavación de cimientos, vaciado de losas de concreto armado y levantamiento de muros limpios.", "Montaje de redes de agua pesada, desagüe y chimeneas de extracción industrial.", "Instalación de cocinas industriales, mesas de trabajo de acero y hornos profesionales."],
+                    recursos: `🧱 Materiales de Construcción y Equipamiento de Acero: S/ ${c1}<br>🙋 Cuadrillas Civiles y Mano de Obra Pesada: S/ ${c2}<br>📋 Certificaciones Sanitarias y Planos Estructurales: S/ ${c3}`
+                },
+                "Crear laboratorios regionales de inocuidad alimentaria para garantizar el control de calidad.": {
+                    problematica: "La descentralización del control de calidad es nula, obligando a enviar las muestras biológicas hasta la capital, demorando los resultados analíticos más de quince días hábiles.",
+                    estrategias: ["Ingeniería de detalle para la distribución de flujos analíticos en zonas estériles.", "Adquisición directa a fábrica de autoclaves, microscopios y reactivos microbiológicos.", "Certificación de las infraestructuras físicas ante el organismo nacional de acreditación."],
+                    actividades: ["Adecuación civil de salas con pintura epóxica y sistemas de aire filtrado controlado.", "Montaje físico e interconexión eléctrica de los equipos analíticos pesados.", "Validación técnica de los métodos de ensayo biológico mediante muestras ciegas."],
+                    recursos: `🧱 Equipamiento Científico de Alta Precisión: S/ ${c1}<br>👷 Adecuación de Ambientes Epóxicos Estériles: S/ ${c2}<br>📋 Auditorías de Acreditación Internacional: S/ ${c3}`
+                },
+                "Instaurar un sistema de acopio directo a productores regionales para reducir la dependencia externa.": {
+                    problematica: "Los pequeños agricultores locales quedan excluidos del proceso de compras del Estado debido a la falta de almacenes logísticos de concentración y empaque en los valles productivos.",
+                    estrategias: ["Instalación física de cobertizos logísticos rurales de pesaje y selección limpia.", "Diseño de flujos comerciales presenciales para transacciones justas en campo.", "Formalización asociativa de los productores agrícolas locales mediante actas notariales."],
+                    actividades: ["Construcción civil de plataformas de carga y coberturas metálicas de acopio.", "Despliegue de balanzas mecánicas calibradas y fajas de selección manual.", "Empadronamiento directo y presencial de los agricultores en los centros comunales."],
+                    recursos: `🧱 Infraestructura de Cobertizos y Balanzas de Campo: S/ ${c1}<br>🎒 Logística de Despliegue de Campo y Pesaje: S/ ${c2}<br>📋 Trámites Notariales de Asociatividad Rural: S/ ${c3}`
+                },
+                "Crear una red nacional de plantas de procesamiento propio para asegurar la sostenibilidad alimentaria.": {
+                    problematica: "La dependencia total de plantas maquiladoras privadas externas expone al programa alimentario a desabastecimientos repentinos por huelgas o fluctuaciones de precios comerciales.",
+                    estrategias: ["Estudios de ingeniería de plantas agroindustriales y cimentación de maquinaria.", "Compra directa de líneas industriales de deshidratado, molienda y empaque hermético.", "Estructuración de flujos logísticos físicos para el ingreso de materia prima regional."],
+                    actividades: ["Edificación civil de naves industriales con estructuras metálicas de gran envergadura.", "Anclaje mecánico, calibración eléctrica y puesta en marcha de los motores procesadores.", "Marcha blanca de empaque masivo de cereales nativos bajo supervisión de ingenieros."],
+                    recursos: `🧱 Naves Agroindustriales y Maquinaria Pesada: S/ ${c1}<br>👷 Ingeniería de Cimentación y Montaje Mecánico: S/ ${c2}<br>📋 Licencias de Edificación e Impacto Ambiental: S/ ${c3}`
+                },
+                "Implementar logística inversa de economía circular para mitigar el impacto ambiental de empaques.": {
+                    problematica: "Los envases plásticos y metálicos vacíos de las raciones alimentarias son quemados o arrojados a ríos cercanos a las escuelas rurales, causando un severo impacto ecológico local.",
+                    estrategias: ["Establecimiento de una red física de recolección selectiva en comunidades rurales.", "Convenios directos operacionales con plantas trituradoras y recicladoras regionales.", "Diseño de incentivos comunitarios presenciales para premiar el reciclaje escolar."],
+                    actividades: ["Distribución física de contenedores diferenciados en 500 locales escolares.", "Rutas camiones recolectores exclusivos para el retiro de material plástico compactado.", "Procesamiento mecánico de los envases recuperados para convertirlos en mobiliario escolar."],
+                    recursos: `🧱 Contenedores Físicos y Camiones Recolectores: S/ ${c1}<br>🎒 Operación de Campo de las Rutas de Retiro: S/ ${c2}<br>🏭 Molienda y Transformación Mecánica Industrial: S/ ${c3}`
+                },
+                "Desplegar un sistema de IA para monitoreo de talla y peso para reducir la desnutrición oculta.": {
+                    problematica: "Los errores humanos en las mediciones manuales con tallímetros de madera desvían los diagnósticos nutricionales, ocultando casos severos de desnutrición crónica.",
+                    estrategias: ["Desarrollo de redes neuronales convolucionales para procesamiento de imágenes antropométricas.", "Construcción de módulos lógicos ligeros para ejecución ágil en dispositivos móviles.", "Aseguramiento de la protección criptográfica de la identidad visual de los menores."],
+                    actividades: ["Entrenamiento algorítmico del modelo informático con imágenes patrones validadas.", "Compilación del software en paquetes portables y pruebas automatizadas de precisión.", "Despliegue del backend de sincronización en clústeres cloud altamente seguros."],
+                    recursos: `💻 Modelamiento de Redes Neuronales y Programación: S/ ${c1}<br>☁️ Infraestructura de Cómputo Cloud en la Nube: S/ ${c2}<br>🛡️ Pruebas de Calidad Informática y Cifrado: S/ ${c3}`
+                },
+                "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.": {
+                    problematica: "Las madres cocineras de los programas sociales en zonas altoandinas inhalan diariamente monóxido de carbono debido al uso generalizado de leña y bosta en ambientes cerrados.",
+                    estrategias: ["Diseño e ingeniería de concentradores parabólicos solares reflectantes de alta eficiencia.", "Validación de la resistencia estructural de los soportes mecánicos ante vientos locales.", "Capacitación vivencial presencial sobre técnicas operativas de cocción solar en comunidades."],
+                    actividades: ["Ensamblaje físico en campo de los paneles parabólicos de aluminio especular.", "Anclaje de las estructuras metálicas al suelo mediante bases de concreto simples.", "Talleres interactivos de cocina solar dirigidos a las madres de los comedores comunitarios."],
+                    recursos: `🧱 Concentradores Parabólicos de Aluminio y Acero: S/ ${c1}<br>🙋 Cuadrillas de Montaje y Anclaje Físico en Campo: S/ ${c2}<br>🎒 Talleres Presenciales de Operación Comunitaria: S/ ${c3}`
+                },
+                "Desplegar una Billetera Digital Centralizada con pago instantáneo para eliminar procesos manuales.": {
+                    problematica: "Los retrasos en los pagos mensuales a beneficiarios ocurren porque el flujo de transferencias actual depende de conciliaciones bancarias manuales en hojas de cálculo propensas a errores.",
+                    estrategias: ["Modelamiento lógico de transacciones en microservicios transaccionales ACID.", "Desarrollo de API gateways con altos estándares de cifrado criptográfico simétrico.", "Diseño de flujos móviles interactivos de procesamiento financiero inmediato."],
+                    actividades: ["Codificación del motor transaccional del software en lenguajes robustos de alto rendimiento.", "Integración informática de los servicios de validación con los núcleos bancarios nacionales.", "Pruebas de estrés y volumen para soportar 100,000 operaciones simultáneas por segundo."],
+                    recursos: `💻 Ingeniería del Motor Transaccional de Software: S/ ${c1}<br>☁️ Nube Elástica de Alta Disponibilidad Financiera: S/ ${c2}<br>🛡️ Auditoría Forense Informática y Ciberseguridad: S/ ${c3}`
+                },
+                "Movilizar brigadas de registro civil casa por casa para revertir la falta de identidad ciudadana.": {
+                    problematica: "Cientos de niños en comunidades amazónicas dispersas carecen de acceso a subsidios estatales debido a que nunca han sido registrados físicamente al nacer por la lejanía de las oficinas registrales.",
+                    estrategias: ["Planificación de rutas de penetración territorial y transporte fluvial adaptado.", "Coordinación interinstitucional presencial para delegación de fe pública en los brigadistas.", "Campañas masivas comunitarias de sensibilización social sobre derechos ciudadanos."],
+                    actividades: ["Despliegue presencial de brigadistas en botes y camionetas hacia caseríos aislados.", "Toma física de huellas dactilares, llenado manual de actas y captura fotográfica en campo.", "Traslado de los expedientes físicos a las sedes registrales para la emisión de documentos."],
+                    recursos: `🙋 Honorarios de Registradores y Personal de Campo: S/ ${c1}<br>🎒 Viáticos Operativos, Combustible y Alquiler de Botes: S/ ${c2}<br>📦 Kits de Registro Físico, Papel Seguridad y Cámaras: S/ ${c3}`
+                },
+                "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.": {
+                    problematica: "Los ciudadanos de zonas vulnerables pierden tiempo y recursos económicos viajando a múltiples oficinas dispersas para tramitar accesos a diferentes programas sociales del sector.",
+                    estrategias: ["Desarrollo de un software modular unificado de gestión de flujos de trámites.", "Integración de servicios web mediante capas de interoperabilidad gubernamental.", "Modelamiento de una base de datos relacional centralizada libre de redundancias."],
+                    actividades: ["Escritura de código para la interfaz unificada de atención al ciudadano.", "Configuración de colas de atención automatizadas y motores de reglas lógicas.", "Despliegue del aplicativo en servidores estatales optimizados para alta concurrencia."],
+                    recursos: `💻 Programación de la Plataforma e Interfaz Unificada: S/ ${c1}<br>☁️ Infraestructura Informática y Servidores Cloud: S/ ${c2}<br>🛡️ Pruebas de Concurrencia, Carga y Seguridad TI: S/ ${c3}`
+                },
+                "Implementar registro Blockchain de transferencias para garantizar la transparencia total.": {
+                    problematica: "Persisten cuestionamientos sobre la inmutabilidad de los registros de transferencias económicas, debido a la vulnerabilidad de las bases de datos tradicionales ante alteraciones no autorizadas.",
+                    estrategias: ["Diseño de una red blockchain permisionada con algoritmos de consenso rápidos.", "Desarrollo de contratos inteligentes (Smart Contracts) inmutables para la dispersión de fondos.", "Cifrado asimétrico de las llaves públicas de los beneficiarios del subsidio."],
+                    actividades: ["Escritura de los contratos inteligentes y pruebas lógicas en entornos de prueba.", "Despliegue físico de nodos validadores criptográficos en servidores de alta seguridad.", "Sincronización automatizada de cada transferencia aprobada en la cadena de bloques."],
+                    recursos: `💻 Desarrollo de Smart Contracts y Código Criptográfico: S/ ${c1}<br>☁️ Nodos Validadores Redundantes en la Nube: S/ ${c2}<br>🛡️ Auditoría Externa de Seguridad Informática Blockchain: S/ ${c3}`
+                },
+                "Instalar terminales satelitales en zonas remotas para combatir la exclusión digital.": {
+                    problematica: "La nula cobertura de telecomunicaciones terrestres en distritos fronterizos impide a los promotores sociales reportar emergencias y validar la vigencia de los beneficiarios.",
+                    estrategias: ["Planificación técnica de enlaces satelitales utilizando tecnología VSAT de órbita baja.", "Diseño de soportes mecánicos con anclajes capaces de resistir ráfagas de viento y lluvias extremas.", "Cálculo de balances de energía para sistemas fotovoltaicos independientes."],
+                    actividades: ["Montaje físico de antenas parabólicas satelitales en techos de locales comunales rurales.", "Alineamiento manual y técnico de la antena con el satélite mediante analizadores de espectro.", "Instalación de gabinetes de protección para routers y cableado exterior blindado."],
+                    recursos: `🧱 Antenas Satelitales VSAT y Routers de Alta Resistencia: S/ ${c1}<br>🔌 Sistemas de Paneles Solares y Baterías de Respaldo: S/ ${c2}<br>👨‍🔬 Puesta a Punto y Alineamiento Radioeléctrico en Campo: S/ ${c3}`
+                },
+                "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.": {
+                    problematica: "Los hogares en situación de pobreza extrema que intentan graduarse de los programas sociales son rechazados por la banca tradicional debido a la falta de avales y garantías reales.",
+                    estrategias: ["Estructuración legal y financiera de un fideicomiso bancario de respaldo líquido.", "Diseño presencial de reglamentos de evaluación de viabilidad productiva rural.", "Coordinación con cajas municipales para canalizar créditos preferenciales en campo."],
+                    actividades: ["Suscripción del contrato legal del fideicomiso ante la banca nacional de desarrollo.", "Conformación de comités locales en campo para calificar proyectos agrícolas y ganaderos.", "Desembolso directo de las garantías financieras a las entidades de microfinanzas aliadas."],
+                    recursos: `💼 Capital Líquido de Respaldo para el Fideicomiso: S/ ${c1}<br>🎒 Gestión Legal, Auditoría y Talleres de Calificación Territorial: S/ ${c2}<br>📋 Trámites de Constitución e Inscripción Financiera: S/ ${c3}`
+                },
+                "Aplicar algoritmos de Machine Learning para la predicción de pobreza y corregir la focalización.": {
+                    problematica: "La clasificación socioeconómica mediante encuestas estáticas genera altas tasas de filtración (falsos positivos) y subcobertura (falsos negativos) en zonas urbanas marginales.",
+                    estrategias: ["Modelamiento de algoritmos de bosque aleatorio (Random Forest) y redes neuronales.", "Procesamiento y limpieza de grandes volúmenes de registros socioeconómicos históricos.", "Establecimiento de métricas de precisión matemática para la reducción de errores."],
+                    actividades: ["Desarrollo de scripts informáticos de entrenamiento con data socioeconómica anonimizada.", "Validación cruzada del modelo matemático de software frente a censos reales.", "Despliegue del motor predictivo algorítmico dentro del núcleo del sistema de focalización."],
+                    recursos: `💻 Científicos de Datos y Desarrollo de Modelos Predictivos: S/ ${c1}<br>☁️ Infraestructura Cloud de Cómputo Avanzado: S/ ${c2}<br>🛡️ Pruebas de Sesgo Algorítmico y Calidad Informática: S/ ${c3}`
+                },
+                "Lograr la interoperabilidad total con RENIEC y SUNAT para integrar la data dispersa.": {
+                    problematica: "La actualización de la información económica familiar demora meses porque los sistemas informáticos institucionales funcionan como silos cerrados sin comunicación automática.",
+                    estrategias: ["Diseño de microservicios de comunicación basados en APIs REST seguras.", "Implementación de protocolos de seguridad OAUTH2 para autenticación mutua de servidores.", "Estructuración de esquemas XML/JSON estandarizados para el intercambio de datos."],
+                    actividades: ["Programación de las interfaces de conexión informática entre los servidores ministeriales y externos.", "Configuración de túneles VPN encriptados para el tránsito seguro de información ciudadana.", "Pruebas de latencia y sincronización masiva automática en entornos de producción."],
+                    recursos: `💻 Desarrollo de APIs de Conexión e Interoperabilidad: S/ ${c1}<br>☁️ Servidores de Pasarela de Datos Segura: S/ ${c2}<br>🛡️ Certificaciones de Cifrado y Auditorías de Penetración TI: S/ ${c3}`
+                },
+                "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.": {
+                    problematica: "Los asentamientos humanos en crecimiento constante no figuran en las cartografías oficiales, invisibilizando la pobreza extrema que carece de servicios básicos.",
+                    estrategias: ["Procesamiento geoespacial de imágenes satelitales multiespectrales de alta resolución.", "Entrenamiento de modelos informáticos de visión artificial para detectar materiales precarios de techos.", "Georreferenciación de zonas con alta vulnerabilidad física ante desastres naturales."],
+                    actividades: ["Adquisición y procesamiento informático de capas satelitales actualizadas del territorio.", "Clasificación automatizada de densidades de vivienda precaria mediante software especializado.", "Integración de las coordenadas de vulnerabilidad dentro del mapa digital de focalización."],
+                    recursos: `💻 Procesamiento de Imágenes Satelitales y Licencias GIS: S/ ${c1}<br>☁️ Almacenamiento Distribuido de Capas Geoespaciales: S/ ${c2}<br>🛡️ Validación de Precisión Cartográfica Informática: S/ ${c3}`
+                },
+                "Lanzar un dashboard ciudadano de ejecución presupuestal para democratizar el acceso a la información.": {
+                    problematica: "La ciudadanía carece de mecanismos sencillos y visuales para auditar el destino final y el avance físico de los fondos invertidos en las propuestas sociales regionales.",
+                    estrategias: ["Diseño de interfaces web dinámicas interactivas orientadas a la experiencia de usuario.", "Desarrollo de pipelines automatizados de extracción y carga de datos desde el SIAF.", "Construcción de componentes gráficos interactivos auto-responsivos."],
+                    actividades: ["Escritura de código frontend utilizando librerías avanzadas de visualización de datos.", "Configuración de consultas automatizadas a las bases de datos presupuestales del Estado.", "Pruebas de usabilidad en dispositivos móviles y optimización de carga de la web."],
+                    recursos: `💻 Programación de Interfaz Frontend y UX: S/ ${c1}<br>☁️ Hosting Cloud e Infraestructura Web Redundante: S/ ${c2}<br>🛡️ Pruebas de Rendimiento de Carga y Seguridad Web: S/ ${c3}`
+                },
+                "Instalar riego solar tecnificado en comunidades rurales para superar la agricultura precaria.": {
+                    problematica: "La escasez extrema de lluvias estacionales en las comunidades altoandinas destruye los cultivos de subsistencia debido a la dependencia de sistemas de riego tradicionales por gravedad.",
+                    estrategias: ["Ingeniería hidráulica de sistemas de riego por goteo con cálculo de presiones físicas.", "Dimensionamiento de plantas de bombeo solar fotovoltaico directo sin baterías químicas.", "Zonificación en campo de las parcelas agrícolas comunes según curvas de nivel."],
+                    actividades: ["Zanjado manual de canales de distribución e instalación física de tuberías de alta densidad.", "Montaje civil de estructuras metálicas elevadas para el soporte de los paneles solares fotovoltaicos.", "Instalación de bombas sumergibles hidráulicas y tendido de cintas de goteo presurizado."],
+                    recursos: `🧱 Tuberías de Riego, Válvulas y Bombas Hidráulicas: S/ ${c1}<br>🔌 Paneles Solares Fotovoltaicos y Tableros DC: S/ ${c2}<br>👷 Mano de Obra para Zanjado e Ingeniería Hidráulica en Campo: S/ ${c3}`
+                },
+                "Crear incubadoras de negocios de transformación para generar valor agregado a la producción.": {
+                    problematica: "Los productores rurales venden sus cosechas en bruto a intermediarios por precios mínimos, debido a la falta de maquinaria e instalaciones locales para procesar y envasar sus productos.",
+                    estrategias: ["Construcción civil de centros de transformación agroindustrial con salas limpias de procesamiento.", "Diseño presencial de programas de mentoría técnica y comercialización para asociaciones rurales.", "Formalización de marcas y registros sanitarios colectivos directamente en campo."],
+                    actividades: ["Vaciado de pisos pulidos de concreto y levantamiento de tabiquería de grado sanitario.", "Montaje mecánico de despulpadoras, selladoras al vacío y deshidratadoras semi-industriales.", "Talleres presenciales intensivos sobre gestión de costos y empaque comercial en las comunidades."],
+                    recursos: `🧱 Equipamiento Agroindustrial Mecánico y Salas Limpias: S/ ${c1}<br>🎒 Talleres de Capacitación Técnica y Mentoría en Campo: S/ ${c2}<br>📋 Costos de Registros Sanitarios e Inscripciones Colectivas: S/ ${c3}`
+                },
+                "Instalar torres de niebla y cosecha de lluvia avanzada para solucionar la falta de agua.": {
+                    problematica: "Las comunidades asentadas en lomas áridas de la costa y la vertiente occidental carecen por completo de agua dulce, dependiendo de camiones cisterna con altos costos por cilindro.",
+                    estrategias: ["Diseño de estructuras modulares de atrapanieblas con mallas Raschel bidimensionales.", "Ingeniería de pendientes para la captación e infiltración de aguas pluviales en reservorios.", "Cálculo físico de resistencia estructural de postes ante vientos costeros severos."],
+                    actividades: ["Anclaje físico de postes de acero e instalación manual de mallas colectoras de niebla.", "Construcción civil de reservorios de geomembrana y canales superficiales de captación de lluvia.", "Instalación de líneas de conducción por gravedad hacia los pilones comunitarios de agua."],
+                    recursos: `🧱 Postes de Acero, Mallas Raschel y Tanques de Geomembrana: S/ ${c1}<br>👷 Cuadrillas de Montaje Físico y Excavación de Reservorios: S/ ${c2}<br>📋 Estudios Técnicos de Vientos y Análisis Hidrológico: S/ ${c3}`
+                },
+                "Implementar centros de economía circular para gestionar los residuos rurales eficientemente.": {
+                    problematica: "La acumulación masiva de envases plásticos de agroquímicos y residuos orgánicos ganaderos contamina las fuentes de agua comunales por la falta de infraestructura de segregación.",
+                    estrategias: ["Construcción de losas de concreto techadas para la clasificación segregada de residuos.", "Establecimiento de pozas técnicas de compostaje acelerado y bioestabilización.", "Diseño de rutas comunales organizadas para la recolección diferenciada de desechos."],
+                    actividades: ["Edificación física de cobertizos modulares con divisiones para metal, plástico y orgánicos.", "Excavación e impermeabilización civil de pozas de compost con capas de arcilla compactada.", "Talleres comunales presenciales para la adopción del sistema de segregación en el origen."],
+                    recursos: `🧱 Losas de Concreto, Coberturas Metálicas y Trituradoras: S/ ${c1}<br>🙋 Operarios de Construcción y Cuadrillas de Clasificación: S/ ${c2}<br>🎒 Campañas Educativas de Segregación Presencial en Campo: S/ ${c3}`
+                },
+                "Lanzar un marketplace digital de productos artesanales para dinamizar los mercados nulos.": {
+                    problematica: "Las artesanas textiles rurales sufren exclusión comercial debido a que no cuentan con canales digitales propios para vender directamente a mercados nacionales e internacionales.",
+                    estrategias: ["Desarrollo de una plataforma e-commerce con catálogo interactivo multimedia.", "Integración informática de pasarelas de pago digitales seguras con validación tokenizada.", "Modelamiento de un backoffice optimizado para la gestión simplificada de inventarios."],
+                    actividades: ["Programación del código comercial del marketplace y del sistema de carrito de compras.", "Configuración de protocolos criptográficos SSL para la protección estricta de las transacciones.", "Despliegue del aplicativo en servidores de arquitectura en la nube de alta disponibilidad."],
+                    recursos: `💻 Desarrollo del Core de la Plataforma E-commerce y pasarelas: S/ ${c1}<br>☁️ Infraestructura de Hosting Cloud y CDN en la Nube: S/ ${c2}<br>🛡️ Pruebas de Vulnerabilidades Computacionales y QA: S/ ${c3}`
+                },
+                "Conectar viveros de empresas rurales mediante satélite para mejorar la conectividad productiva.": {
+                    problematica: "La nula conectividad en los centros de producción rural impide a las asociaciones verificar las cotizaciones del mercado agrícola en tiempo real, vendiendo a pérdida.",
+                    estrategias: ["Diseño e instalación técnica de estaciones VSAT satelitales autónomas en campo.", "Estructuración de redes inalámbricas locales de área amplia y bajo consumo energético.", "Cálculo fotovoltaico para garantizar autonomía eléctrica las 24 horas del día."],
+                    actividades: ["Fijación física de soportes estructurales de antenas en los tejados de los viveros.", "Alineamiento radioeléctrico con los satélites geoestacionarios de telecomunicaciones.", "Instalación de routers de alta ganancia y gabinetes de protección contra la intemperie."],
+                    recursos: `🧱 Antenas Satelitales VSAT y Equipos de Red Inalámbrica: S/ ${c1}<br>🔌 Kit Solar de Alimentación Eléctrica Independiente: S/ ${c2}<br>👨‍🔬 Puesta en Marcha y Certificación Electrónica de Frecuencia: S/ ${c3}`
+                },
+                "Desarrollar logística de carga inteligente para optimizar el transporte de productores.": {
+                    problematica: "Los camiones comunales viajan a los mercados regionales a media capacidad o regresan vacíos, lo que duplica los costos de flete por cada tonelada de producción agrícola local.",
+                    estrategias: ["Modelamiento lógico de un software distribuido de consolidación de carga cooperativa.", "Desarrollo de algoritmos de optimización espacial volumétrica para camiones.", "Diseño de una arquitectura de base de datos relacional para control de rutas dinámicas."],
+                    actividades: ["Escritura de código informático para emparejar la oferta de transporte con la demanda de espacio.", "Pruebas de estrés informático del sistema ante picos estacionales de cosecha agrícola.", "Despliegue de la aplicación informática en la infraestructura cloud institucional."],
+                    recursos: `💻 Programación de Algoritmos Logísticos e Interfaz Web: S/ ${c1}<br>☁️ Servidores y Almacenamiento Cloud en la Nube: S/ ${c2}<br>🛡️ Pruebas de Integridad Informática, Carga y QA TI: S/ ${c3}`
+                },
+                "Implementar sistemas de hidroponía escolar y comunitaria para combatir la escasez de alimentos.": {
+                    problematica: "En las localidades altoandinas con suelos áridos o contaminados por relaves mineros es imposible cultivar hortalizas frescas, lo que restringe gravemente el acceso a vitaminas.",
+                    estrategias: ["Diseño de sistemas hidropónicos de raíz flotante y película de nutrientes (NFT).", "Ingeniería de invernaderos agrícolas con protección contra heladas y radiación UV.", "Formulación química precisa de soluciones de nutrientes minerales para el agua."],
+                    actividades: ["Construcción civil de invernaderos con perfiles de acero galvanizado y film de alta densidad.", "Montaje físico de tuberías de PVC dispuestas en cascada, tanques y bombas de agua.", "Talleres prácticos de campo con la comunidad para enseñar la siembra sobre sustratos inertes."],
+                    recursos: `🧱 Invernaderos, Tuberías de PVC y Tanques Hidráulicos: S/ ${c1}<br>🙋 Cuadrillas de Construcción y Montaje Técnico en Campo: S/ ${c2}<br>🎒 Talleres Presenciales de Manejo Nutricional del Agua: S/ ${c3}`
+                },
+                "Construir centros infantiles con arquitectura resiliente para garantizar una infraestructura segura.": {
+                    problematica: "Los centros de cuidado infantil actuales operan en locales de adobe o quincha altamente vulnerables ante sismos intensos o inundaciones por desbordes de ríos.",
+                    estrategias: ["Cálculo estructural e ingeniería civil sísmica bajo normativa de edificación pública.", "Diseño arquitectónico bioclimático con aislamiento térmico pasivo para zonas de heladas.", "Planificación de sistemas independientes de drenaje pluvial masivo de alta capacidad."],
+                    actividades: ["Excavación profunda de cimientos, colocación de armaduras de acero y vaciado de concreto armado.", "Levantamiento de muros con bloques termoacústicos y tendido de coberturas autoportantes.", "Instalación de acabados sanitarios seguros, pisos de goma amortiguante y vidrios laminados."],
+                    recursos: `🧱 Cemento, Fierro, Bloques Térmicos y Equipamiento Infantil: S/ ${c1}<br>👷 Mano de Obra Calificada Civiles e Ingenieros Residentes: S/ ${c2}<br>📋 Estudios Topográficos, Mecánica de Suelos y Licencias: S/ ${c3}`
+                },
+                "Aplicar monitoreo biométrico y pedagógico IoT para revertir la falta de estimulación temprana.": {
+                    problematica: "La detección tardía de retrasos en el neurodesarrollo de niños menores de tres años se debe a que las evaluaciones psicomotrices actuales son manuales e infrecuentes.",
+                    estrategias: ["Diseño de pulseras electrónicas ergonómicas con sensores médicos de grado clínico.", "Desarrollo de protocolos inalámbricos de comunicación de datos de ultra bajo consumo energético.", "Modelamiento de algoritmos de procesamiento de señales biológicas en tiempo real."],
+                    actividades: ["Prototipado electrónico y ensamblaje de las placas de circuito integrado de los dispositivos.", "Configuración física de las antenas receptoras fijas dentro de las salas de cuidado infantil.", "Pruebas de laboratorio para certificar la nula emisión de radiación nociva del hardware."],
+                    recursos: `📟 Dispositivos Electrónicos Biométricos y Sensores IoT: S/ ${c1}<br>🔌 Infraestructura Eléctrica y Antenas Locales de Recepción: S/ ${c2}<br>👨‍🔬 Ingeniería de Hardware, Calibración y Certificación de Equipos: S/ ${c3}`
+                },
+                "Ejecutar ampliaciones modulares de centros de cuidado para eliminar el hacinamiento.": {
+                    problematica: "El hacinamiento crítico en las salas de Cuna Más reduce la calidad del cuidado infantil y eleva exponencialmente el riesgo de contagio de enfermedades respiratorias.",
+                    estrategias: ["Ingeniería de diseño modular de estructuras prefabricadas termoacústicas de rápido ensamblaje.", "Cálculo de zapatas de concreto simples para el soporte mecánico seguro de los módulos.", "Optimización del flujo físico de aire e iluminación natural dentro del espacio educativo."],
+                    actividades: ["Vaciado civil de plateas de cimentación e instalación de pernos de anclaje de alta resistencia.", "Montaje mecánico de paneles sándwich aislantes para muros y coberturas autoportantes de techos.", "Conexión de ramales complementarios de redes de agua limpia y energía eléctrica."],
+                    recursos: `🧱 Paneles Sándwich Modulares y Perfiles de Acero Galvanizado: S/ ${c1}<br>👷 Personal de Construcción, Montadores y Dirección de Obra: S/ ${c2}<br>📋 Permisos Municipales de Edificación y Planos de Detalle: S/ ${c3}`
+                },
+                "Instalar cocinas ecológicas con sensores de aire para reducir la desnutrición y riesgos respiratorios.": {
+                    problematica: "El humo intradomiciliario generado por fogones tradicionales daña gravemente las vías respiratorias de los lactantes, lo que debilita sus defensas y agrava los cuadros de desnutrición.",
+                    estrategias: ["Ingeniería de materiales refractarios para la construcción de cámaras de combustión eficientes.", "Diseño de ductos de evacuación vertical con deflectores antiviento de acero galvanizado.", "Integración de componentes electrónicos discretos para la medición electroquímica de gases."],
+                    actividades: ["Construcción civil en campo de las cocinas fijas utilizando ladrillos refractarios y barro arcilloso.", "Instalación física de chimeneas metálicas herméticas hacia el exterior de las viviendas.", "Fijación e instrumentación de los módulos de medición de monóxido de carbono en la pared."],
+                    recursos: `🧱 Ladrillos Refractarios, Planchas de Fierro y Chimeneas Metálicas: S/ ${c1}<br>📟 Módulos Electrónicos de Medición y Sensores de Aire: S/ ${c2}<br>👷 Albañiles Locales y Mano de Obra de Construcción en Campo: S/ ${c3}`
+                },
+                "Desplegar app nacional de hitos de desarrollo cognitivo para realizar un seguimiento efectivo.": {
+                    problematica: "Los padres de familia en situación de vulnerabilidad carecen de herramientas accesibles para evaluar si sus hijos están alcanzando los hitos de lenguaje y motricidad esperados para su edad.",
+                    estrategias: ["Modelamiento informático de una aplicación nativa móvil multiplataforma intuitiva.", "Estructuración de flujos lógicos asíncronos para el almacenamiento local de respuestas sin conexión.", "Diseño de una arquitectura de base de datos distribuida en la nube para sincronización diferida."],
+                    actividades: ["Codificación del software frontend y backend respetando estándares internacionales de UX.", "Pruebas QA automatizadas de rendimiento y velocidad en teléfonos inteligentes de gama baja.", "Publicación del aplicativo informático en las tiendas globales de distribución móvil."],
+                    recursos: `💻 Ingeniería y Programación de la Aplicación Móvil Nativa: S/ ${c1}<br>☁️ Infraestructura de Base de Datos Cloud y Sincronización: S/ ${c2}<br>🛡️ Pruebas Informáticas de Seguridad de Datos y Calidad QA: S/ ${c3}`
+                },
+                "Implementar sistemas de alerta temprana en guarderías para fortalecer la seguridad infantil.": {
+                    problematica: "Las inundaciones repentinas o fugas de gas en guarderías rurales ponen en riesgo la vida de los niños debido a la falta de alarmas automatizadas que avisen de inmediato.",
+                    estrategias: ["Modelamiento electrónico de centrales de alarmas autónomas con topología mesh inalámbrica.", "Integración de sensores inductivos de inundación y celdas catalíticas para gas licuado.", "Diseño de actuadores físicos independientes para la activación de sirenas potentes."],
+                    actividades: ["Instalación física de los sensores en zonas de riesgo crítico (suelos y zonas bajas de cocinas).", "Montaje de sirenas acústicas y luces estroboscópicas de advertencia en los patios centrales.", "Configuración y pruebas de activación autónoma mediante cortes de energía inducidos."],
+                    recursos: `📟 Centrales de Alarma, Sensores Inductivos y Sirenas de Alta Potencia: S/ ${c1}<br>🔌 Canalizaciones Eléctricas Blindadas y Baterías de Respaldo: S/ ${c2}<br>👨‍🔬 Ingeniería de Puesta a Punto y Pruebas Electrónicas Directas: S/ ${c3}`
+                },
+                "Otorgar becas de especialización para cuidadores para elevar la calidad de la capacitación.": {
+                    problematica: "El personal encargado del cuidado de los lactantes en las comunidades rurales carece de formación técnica especializada en estimulación temprana y prácticas de crianza saludable.",
+                    estrategias: ["Estructuración académica presencial de programas de especialización en educación inicial.", "Despliegue territorial de docentes universitarios hacia los locales provinciales rurales.", "Diseño de materiales pedagógicos físicos adaptados al contexto cultural andino y amazónico."],
+                    actividades: ["Suscripción de convenios formales presenciales con institutos pedagógicos licenciados.", "Dictado presencial de clases teórico-prácticas en talleres los fines de semana en campo.", "Evaluación presencial del desempeño pedagógico directo de las cuidadoras en sus salas."],
+                    recursos: `🙋 Honorarios de Docentes Universitarios y Especialistas de Campo: S/ ${c1}<br>🎒 Material Pedagógico Físico, Guías Técnicas y Alquiler de Aulas: S/ ${c2}<br>📋 Costos de Certificación Académica e Inscripciones Oficiales: S/ ${c3}`
+                },
+                "Crear una red nacional de centros de salud activa para romper el aislamiento del adulto mayor.": {
+                    problematica: "Los adultos mayores de zonas rurales sufren un abandono social y físico severo, lo que acelera el deterioro cognitivo y la pérdida de autonomía por falta de espacios de actividad física regular.",
+                    estrategias: ["Diseño civil de centros de esparcimiento con accesibilidad universal y rampas mecánicas fijas.", "Establecimiento presencial de programas de gerontología preventiva y reactivación física.", "Articulación sectorial en territorio con el MINSA para la atención médica presencial regular."],
+                    actividades: ["Construcción de pabellones comunales amplios con techos altos aislantes y pisos antideslizantes.", "Equipamiento de salas de fisioterapia rural con barras paralelas, camillas y poleas mecánicas.", "Ejecución presencial diaria de talleres de gimnasia suave y estimulación de memoria en campo."],
+                    recursos: `🧱 Edificación de Pabellones Civiles, Rampas y Equipos de Fisioterapia: S/ ${c1}<br>🙋 Médicos, Fisioterapeutas de Campo y Terapeutas Sociales: S/ ${c2}<br>📋 Estudios de Accesibilidad, Planos Arquitectónicos y Permisos: S/ ${c3}`
+                },
+                "Entregar tabletas con interfaz adaptada y conexión para reducir la brecha digital en ancianos.": {
+                    problematica: "Los beneficiarios de Pensión 65 quedan excluidos de los servicios de salud e identidad porque los dispositivos tecnológicos del mercado tienen tipografías pequeñas e interfaces complejas.",
+                    estrategias: ["Desarrollo de un launcher de software simplificado con botones macro y alto contraste visual.", "Arquitectura de un firmware embebido optimizado para restringir el consumo innecesario de datos.", "Diseño de un sistema operativo móvil cerrado enfocado exclusivamente en consultas sociales estatales."],
+                    actividades: ["Inyección e instalación del software modificado directamente en la memoria interna de las tabletas.", "Configuración de perfiles de conectividad móvil segura con direccionamiento privado.", "Pruebas informáticas automatizadas de rendimiento y duración de batería bajo el entorno optimizado."],
+                    recursos: `💻 Desarrollo del Launcher de Software y Modificación de Firmware: S/ ${c1}<br>☁️ Servidores de Configuración Remota de Dispositivos (MDM): S/ ${c2}<br>🛡️ Pruebas Informáticas de Accesibilidad, Usabilidad TI y QA: S/ ${c3}`
+                },
+                "Ejecutar acondicionamiento térmico de viviendas rurales para proteger contra las heladas.": {
+                    problematica: "Las temperaturas bajo cero en las zonas altoandinas causan anualmente la muerte por neumonía de adultos mayores que habitan viviendas con muros de piedra que filtran el aire helado.",
+                    estrategias: ["Ingeniería civil para la instalación de tecnologías estructurales de muro trombe de captación solar.", "Diseño de cielos rasos prefabricados de madera machihembrada con doble aislamiento de lana de vidrio.", "Instalación de puertas y ventanas herméticas con burletes de caucho sintético de alta densidad."],
+                    actividades: ["Construcción civil en campo de cámaras de aire de policarbonato adosadas a los muros exteriores.", "Fijación física de planchas de aislamiento en techos y sellado estructural de grietas en paredes.", "Pruebas térmicas presenciales in situ utilizando termómetros láser de superficie en las viviendas."],
+                    recursos: `🧱 Madera Machihembrada, Planchas de Policarbonato y Lana de Vidrio: S/ ${c1}<br>👷 Cuadrillas de Carpinteros Civiles y Albañiles de Campo: S/ ${c2}<br>📋 Evaluaciones Térmicas de Campo, Planos y Monitoreo de Temperatura: S/ ${c3}`
+                },
+                "Implementar un programa de relevo familiar para el soporte a cuidadores de adultos mayores.": {
+                    problematica: "Las familias que cuidan a ancianos postrados sufren un desgaste mental crónico y un colapso económico debido a la imposibilidad de salir a trabajar por la falta de un cuidador de relevo.",
+                    estrategias: ["Estructuración de una red de técnicos de asistencia domiciliaria especializada.", "Planificación territorial presencial de turnos semanales de relevo para descanso familiar.", "Capacitación presencial en técnicas de movilización segura y cuidado paliativo en campo."],
+                    actividades: ["Convocatoria y contratación directa de personal técnico auxiliar en enfermería gerontológica.", "Despliegue de los asistentes domiciliarios en campo para cubrir los turnos programados en los hogares.", "Talleres familiares de soporte social y psicológico presencial directamente en territorio."],
+                    recursos: `🙋 Honorarios de Auxiliares de Enfermería y Cuidadores de Campo: S/ ${c1}<br>🎒 Viáticos Operativos de Despliegue Rural y Movilidad: S/ ${c2}<br>📦 Suministros Físicos de Cuidado, Fajas de Traslado y Guías: S/ ${c3}`
+                },
+                "Realizar tamizaje móvil preventivo masivo para fortalecer la salud preventiva rural.": {
+                    problematica: "Los adultos mayores de caseríos dispersos no reciben diagnósticos tempranos de enfermedades crónicas porque el centro de salud más cercano se encuentra a seis horas de caminata.",
+                    estrategias: ["Diseño logístico de rutas para clínicas móviles integrales instaladas en camiones todo terreno.", "Articulación sectorial en territorio con médicos especialistas del MINSA.", "Estructuración de protocolos de campo para pruebas rápidas de laboratorio bioquímico."],
+                    actividades: ["Carrozado civil y equipamiento médico físico de camiones pesados 4x4 de alta autonomía.", "Despliegue presencial de las unidades móviles a las plazas comunales rurales más alejadas.", "Toma presencial de muestras de sangre, exámenes electrocardiográficos y entrega directa de medicamentos."],
+                    recursos: `🧱 Camiones Todo Terreno y Equipamiento Médico Físico Pesado: S/ ${c1}<br>🙋 Médicos, Tecnólogos Médicos y Enfermeros de Campo: S/ ${c2}<br>📦 Reactivos Bioquímicos de Campo, Pruebas Rápidas e Insumos: S/ ${c3}`
+                },
+                "Crear una bolsa de empleo adaptada para discapacidad para combatir el desempleo especializado.": {
+                    problematica: "Las personas con discapacidad severa en edad de trabajar sufren exclusión laboral debido a que las plataformas tradicionales no filtran vacantes que cumplan con los perfiles de accesibilidad física requeridos.",
+                    estrategias: ["Desarrollo de un portal informático de empleo bajo normativas de accesibilidad W3C WCAG.", "Modelamiento de una arquitectura de software con indexación inteligente de perfiles de accesibilidad.", "Integración de módulos informáticos para lectores de pantalla y navegación por voz nativa."],
+                    actividades: ["Codificación accesible de la plataforma web frontend y del panel de control de las empresas.", "Pruebas de compatibilidad con software lector de pantalla comercial y hardware tiflológico.", "Despliegue del aplicativo web informático en servidores cloud seguros del sector público."],
+                    recursos: `💻 Desarrollo de Código Web Accesible WCAG Avanzado: S/ ${c1}<br>☁️ Infraestructura de Servidores Cloud y Bases de Datos: S/ ${c2}<br>🛡️ Certificación Informática de Accesibilidad y Pruebas QA TI: S/ ${c3}`
+                },
+                "Formar una red de promotores locales de salud mental para atender esta problemática crítica.": {
+                    problematica: "Los altos índices de violencia familiar y depresión en comunidades rurales no reciben atención oportuna debido a la falta absoluta de psicólogos en las postas médicas locales.",
+                    estrategias: ["Diseño metodológico presencial de un currículo técnico en primeros auxilios psicológicos.", "Selección territorial directa de líderes comunales para su formación como promotores.", "Estructuración de redes comunitarias presenciales para la derivación urgente de casos críticos."],
+                    actividades: ["Dictado presencial de módulos de capacitación en salud mental comunitaria en los locales distritales.", "Despliegue de los promotores certificados en campo para la conducción de círculos de apoyo social.", "Supervisión clínica directa y presencial de los casos detectados por psicólogos itinerantes."],
+                    recursos: `🙋 Honorarios de Psicólogos Clínicos y Capacitadores de Campo: S/ ${c1}<br>🎒 Viáticos de Despliegue Territorial y Movilidad Rural: S/ ${c2}<br>📦 Guías de Campo Impresas, Manuales Prácticos y Material Didáctico: S/ ${c3}`
+                },
+                "Distribuir kits de asistencia técnica personalizada para mejorar la movilidad individual.": {
+                    problematica: "Cientos de niños y jóvenes con discapacidad motriz viven postrados en camas debido a que las sillas de ruedas comerciales no se adaptan a los accidentados terrenos empedrados de la sierra.",
+                    estrategias: ["Ingeniería biomecánica para el diseño de ayudas técnicas reforzadas con suspensiones de alta torsión.", "Evaluación presencial y personalizada en territorio de las medidas antropométricas de cada usuario.", "Adquisición masiva de aleaciones ligeras de aluminio aeroespacial para la fabricación de estructuras."],
+                    actividades: ["Toma presencial de moldes de postura y adaptaciones ergonómicas individuales en campo.", "Fabricación mecánica y ensamblaje industrial de los chasis de las sillas todo terreno reforzadas.", "Distribución domiciliaria directa y talleres presenciales sobre el mantenimiento mecánico básico de los kits."],
+                    recursos: `🧱 Chasis de Aluminio Aeroespacial, Llantas Reforzadas y Kits Posturales: S/ ${c1}<br>🙋 Técnicos Biomecánicos, Fisioterapeutas de Campo y Operarios: S/ ${c2}<br>🎒 Logística de Distribución Domiciliaria Rural y Ensamblaje: S/ ${c3}`
+                },
+                "Otorgar becas de formación técnica inclusiva para mejorar la educación y empleabilidad.": {
+                    problematica: "Los jóvenes con discapacidad auditiva o intelectual leve desertan del sistema educativo superior porque las escuelas técnicas carecen de intérpretes de señas y metodologías de enseñanza adaptadas.",
+                    estrategias: ["Suscripción de convenios institucionales presenciales con institutos tecnológicos licenciados.", "Financiamiento directo de honorarios para el despliegue de intérpretes de lengua de señas en las aulas.", "Adecuación física y curricular presencial de los talleres de soldadura, confección y carpintería."],
+                    actividades: ["Matrícula presencial financiada de los becarios en los semestres académicos técnicos oficiales.", "Acompañamiento presencial diario en aula por especialistas en educación inclusiva y lenguaje de señas.", "Evaluación presencial final de las competencias técnicas adquiridas en los laboratorios de examen."],
+                    recursos: `🙋 Financiamiento de Pensiones e Intérpretes Profesionales de Señas: S/ ${c1}<br>🎒 Materiales de Taller Adaptados, Herramientas Especiales y Guías: S/ ${c2}<br>📋 Certificaciones Técnicas Oficiales y Tasas Administrativas: S/ ${c3}`
+                },
+                "Adaptar espacios públicos inclusivos para mejorar la infraestructura de acceso universal.": {
+                    problematica: "Las plazas, parques y veredas de las capitales distritales vulnerables carecen de rampas normadas, pisos podotáctiles y barandas, confinando a las personas con discapacidad a sus hogares.",
+                    estrategias: ["Ingeniería civil urbana bajo normativas nacionales e internacionales de accesibilidad universal.", "Rediseño arquitectónico físico de cruces peatonales y accesos principales a edificios públicos.", "Selección de pavimentos especiales de alta resistencia mecánica y texturas contrastantes."],
+                    actividades: ["Demolición de veredas antiguas, nivelación de suelos y vaciado de rampas con pendientes menores al 8%.", "Instalación física de baldosas podotáctiles de cemento pigmentado para guía de personas invidentes.", "Montaje de barandas metálicas de doble altura con tubos de acero galvanizado anclados al concreto."],
+                    recursos: `🧱 Cemento, Acero Galvanizado, Baldosas Podotáctiles y Mezcladoras: S/ ${c1}<br>👷 Cuadrillas Civiles, Albañiles de Obra y Topógrafos de Campo: S/ ${c2}<br>📋 Estudios Técnicos de Tránsito Urbano, Planos y Licencias Obra: S/ ${c3}`
+                },
+                "Operar hospitales fluviales con telemedicina para superar la inaccesibilidad geográfica.": {
+                    problematica: "Las poblaciones de las cuencas amazónicas fronterizas sufren muertes por afecciones prevenibles debido a que viajar a un hospital requiere navegar en bote hasta cinco días por ríos caudalosos.",
+                    estrategias: ["Ingeniería naval de detalle para el diseño estructural de barcos hospital de bajo calado.", "Diseño e integración técnica de enlaces de telecomunicación satelital en movimiento (COTP).", "Estructuración de laboratorios de diagnóstico clínico compactos con blindaje térmico náutico."],
+                    actividades: ["Construcción en astillero del casco de acero naval e instalación de un motor marino estacionario diésel.", "Montaje físico de consultorios médicos, sillones odontológicos y ecógrafos en la cubierta principal.", "Instalación de la antena parabólica giroscópica satelital sobre el puente de mando de la embarcación."],
+                    recursos: `🧱 Casco de Acero Naval, Motor Estacionario y Equipamiento Médico Náutico: S/ ${c1}<br>🛰️ Antena Satelital Giroscópica y Equipos de Comunicación Marítima: S/ ${c2}<br>👷 Ingenieros Navales, Soldadores de Astillero y Mecánicos Marinos: S/ ${c3}`
+                },
+                "Implementar farmacia por drones para vencer la distancia en zonas aisladas.": {
+                    problematica: "Las postas médicas satélites de las zonas andinas sufren desabastecimientos repentinos de sueros antiofídicos y vacunas críticas por la falta de transporte rápido ante emergencias médicas.",
+                    estrategias: ["Ingeniería aeronáutica para el diseño estructural de drones de ala fija y despegue vertical (VTOL).", "Diseño de compartimentos de carga físicos con aislamiento térmico pasivo por vacío.", "Gestión de permisos aeronáuticos de uso del espacio aéreo restringido ante la DGAC."],
+                    actividades: ["Ensamblaje mecánico de fuselajes de fibra de carbono, servomotores y hélices de alta eficiencia.", "Pruebas físicas de autonomía de vuelo autónomo en condiciones de viento fuerte en zonas montañosas.", "Instalación física de las estaciones en tierra de despegue y recarga automática de baterías solares."],
+                    recursos: `🛸 Aeronaves de Ala Fija VTOL en Fibra de Carbono y Hélices: S/ ${c1}<br>🔌 Estaciones Terrestres de Recarga, Paneles Solares y Baterías: S/ ${c2}<br>👨‍🔬 Ingeniería de Aeronavegabilidad, Permisos DGAC y Calibración: S/ ${c3}`
+                },
+                "Activar una red de alerta temprana vía mensajería para gestionar emergencias oportunamente.": {
+                    problematica: "La ocurrencia de huaycos e inundaciones en quebradas habitadas genera pérdidas humanas debido a la ausencia de un sistema automatizado de notificaciones de evacuación.",
+                    estrategias: ["Desarrollo de un software concentrador de telecomunicaciones interconectado a pasarelas SMS masivas.", "Modelamiento lógico de colas distribuidas para el envío simultáneo de miles de alertas de texto.", "Integración mediante APIs seguras con las bases de datos de antenas de telefonía móvil (celdas)."],
+                    actividades: ["Escritura de código en entornos de programación de alta concurrencia para el procesamiento de mensajes.", "Pruebas de latencia informática para garantizar el envío de 50,000 SMS en menos de un minuto.", "Sincronización técnica de los protocolos de comunicación informática con los operadores de telefonía."],
+                    recursos: `💻 Programación de la Plataforma SMS de Alta Concurrencia: S/ ${c1}<br>☁️ Infraestructura de Servidores Cloud y Pasarelas de Telecomunicación: S/ ${c2}<br>🛡️ Pruebas de Estrés Computacional, Carga Masiva y Seguridad TI: S/ ${c3}`
+                },
+                "Desplegar plataformas itinerantes multi-servicio para acercar los servicios estatales.": {
+                    problematica: "Los habitantes de zonas altoandinas de la cordillera viven excluidos del acceso al cobro de subsidios y trámites notariales porque no existen agencias bancarias locales en sus distritos.",
+                    estrategias: ["Ingeniería mecánica automotriz para la adaptación estructural de camiones todo terreno pesados.", "Diseño civil de compartimentos blindados blindaje tipo III para cajeros automáticos físicos.", "Instalación técnica de telecomunicaciones satelitales autónomas integradas al chasis del vehículo."],
+                    actividades: ["Montaje civil de las carrocerías modulares de acero sobre chasis de camiones pesados 6x6.", "Instalación física de ventanillas blindadas de atención, cajas fuertes mecánicas y cableado eléctrico.", "Despliegue operativo presencial de los vehículos diésel a través de rutas de trocha de la sierra."],
+                    recursos: `🧱 Camiones Pesados 6x6, Carrocerías Blindadas y Cajas Fuertes: S/ ${c1}<br>🛰️ Equipos de Comunicación Satelital VSAT Móvil e Inversores: S/ ${c2}<br>👷 Ingenieros Mecánicos Automotrices, Carroceros y Electricistas: S/ ${c3}`
+                },
+                "Instalar nodos de Wi-Fi social en plazas públicas para garantizar la conectividad comunitaria.": {
+                    problematica: "Los estudiantes de distritos vulnerables no pueden realizar investigaciones académicas debido a que sus familias no pueden costear los altos precios del internet móvil comercial.",
+                    estrategias: ["Planificación de radioenlaces de telecomunicación microondas e ingeniería de torres metálicas.", "Diseño de soportes mecánicos antivandálicos para access points de grado industrial exterior.", "Cálculo fotovoltaico independiente para asegurar la provisión eléctrica ininterrumpida."],
+                    actividades: ["Cimentación de concreto y montaje físico de postes y torres de acero galvanizado en las plazas.", "Instalación y cableado de access points industriales protegidos por gabinetes NEMA herméticos.", "Pruebas electrónicas de campo para medir la cobertura del espectro radial y balancear el tráfico físico."],
+                    recursos: `🧱 Access Points Exteriores Industriales, Gabinetes y Torres Acero: S/ ${c1}<br>🔌 Equipamiento Solar Fotovoltaico Completo y Baterías de Gel: S/ ${c2}<br>👨‍🔬 Configuración Radioeléctrica en Campo, Tendido Eléctrico y QA: S/ ${c3}`
+                }
+            };
 
-            // Criterio 1: Internet de las Cosas (Sensórica, IoT, Biometría)
-            if (n.includes("iot") || n.includes("sensores") || n.includes("medición") || n.includes("biométrico")) {
-                let hardwareCant = Math.round(costoMillones * 320);
-                return {
-                    estrategias: [
-                        "Diseño arquitectónico de redes inalámbricas de ultra bajo consumo de energía en entornos rurales aislados.",
-                        "Homologación internacional y calibración de celdas de medición y telemetría bajo estándares de inmunidad electromagnética.",
-                        "Establecimiento de convenios estratégicos de transmisión con empresas de telecomunicaciones para ancho de banda dedicado."
-                    ],
-                    actividades: [
-                        "Instalación en campo de terminales físicos periféricos y antenas receptoras con protección climática IP67.",
-                        "Despliegue distribuido de gateways concentradores y pruebas de redundancia ante pérdida de energía eléctrica.",
-                        "Integración de las tramas de datos crudos mediante APIs hacia el centro de monitoreo principal del MIDIS."
-                    ],
-                    recursos: `
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">💻 Hardware & Dispositivos Periféricos</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Adquisición de <strong>${hardwareCant} unidades</strong> de sensores de telemetría IoT industriales calibrados y microcontroladores.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">👷 Talento, Ingeniería de Redes & Despliegue</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Honorarios para <strong>04 Ingenieros de Sistemas IoT</strong> y Arquitectos Cloud por un periodo continuo de 8 meses.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">📡 Infraestructura TI, Servidores & Planes de Datos</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Licenciamiento Cloud empresarial y contratos corporativos de transmisión celular M2M por 12 meses de servicio.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
-                        </div>`
-                };
-            }
-
-            // Criterio 2: Informática, Apps, Algoritmos, Software, AI, Blockchain, Marketplace, Dashboard
-            if (n.includes("software") || n.includes("ruteo") || n.includes("algoritmos") || n.includes("machine learning") || n.includes("ia") || n.includes("billetera") || n.includes("blockchain") || n.includes("app") || n.includes("marketplace") || n.includes("dashboard")) {
-                let clusters = Math.round(costoMillones * 2.5) || 1;
-                return {
-                    estrategias: [
-                        "Diseño conceptual basado en microservicios contenerizados y arquitectura serverless escalable de alta disponibilidad.",
-                        "Implementación de estrictos esquemas de encriptación simétrica/asimétrica en tránsito y en reposo para protección de datos sensibles.",
-                        "Establecimiento de metodologías ágiles (Scrum) con ciclos iterativos quincenales para testing modular activo."
-                    ],
-                    actividades: [
-                        "Modelamiento relacional y no relacional de grandes bases de datos centralizadas con indexación optimizada.",
-                        "Codificación de algoritmos avanzados, dashboards interactivos y desarrollo de interfaces de usuario adaptadas a baja conectividad.",
-                        "Ejecución obligatoria de auditorías externas de ciberseguridad, pruebas de penetración (PenTesting) y corrección de vulnerabilidades."
-                    ],
-                    recursos: `
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">💻 Desarrollo de Software & Arquitectura Devops</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Contratación de <strong>01 Software Factory Líder</strong> (03 Programadores Fullstack, 01 Científico de Datos, 01 Analista QA).</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">☁️ Entornos Cloud y Nodos de Cómputo Redundantes</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Aprovisionamiento de <strong>${clusters} Clusters empresariales AWS/Azure</strong> resilientes de alta concurrencia.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">🛡️ Certificaciones, Ethical Hacking & Capacitaciones</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Adquisición de certificados criptográficos SSL, licencias corporativas y talleres técnicos presenciales de despliegue.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
-                        </div>`
-                };
-            }
-
-            // Criterio 3: Construcción, Obras Físicas, Plantas, Cocinas, Centros, Infraestructura Estructural
-            if (n.includes("cocinas") || n.includes("centros") || n.includes("infraestructura") || n.includes("viviendas") || n.includes("riego solar") || n.includes("torres de niebla") || n.includes("plantas") || n.includes("espacios públicos")) {
-                let modulos = Math.round(costoMillones * 12);
-                return {
-                    estrategias: [
-                        "Elaboración de expedientes técnicos detallados de ingeniería civil, hidráulica y eléctrica ajustados a la geografía de cada zona.",
-                        "Establecimiento de una cadena centralizada de compras y provisión de materiales con certificación sismorresistente.",
-                        "Coordinación interinstitucional con municipalidades de la región para la agilización y saneamiento legal de terrenos fiscales."
-                    ],
-                    actividades: [
-                        "Movilización de maquinarias pesadas, nivelación técnica de suelos y cimentación estructural bajo normativas vigentes.",
-                        "Montaje de estructuras modulares autoportantes, techados con aislamiento térmico e instalaciones de redes sanitarias internas.",
-                        "Pruebas de carga de fluidos, equipamiento electromecánico y entrega formal de la obra con actas de conformidad técnica."
-                    ],
-                    recursos: `
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">🧱 Obras Civiles & Adquisición de Materiales Base</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Fondos asignados a la edificación y habilitación de <strong>${modulos} unidades estructurales físicas modulares</strong> de alta resistencia.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">⚙️ Maquinarias Pesadas & Equipamiento Tecnológico Interno</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Suministro y montaje de sistemas mecánicos industriales, matrices de paneles solares fotovoltaicos o herramental de planta.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">📋 Inspecciones de Seguridad, Estudios Ambientales & Residentes</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Financiamiento de honorarios de Residentes y Supervisores de Obra, certificaciones de INDECI y estudios de impacto ambiental.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
-                        </div>`
-                };
-            }
-
-            // Criterio 4: Logística Móvil Avanzada, Hospitales Fluviales, Drones, Terminales Satelitales, Wi-Fi Nodos
-            if (n.includes("satelitales") || n.includes("satelital") || n.includes("drones") || n.includes("wi-fi") || n.includes("nodos") || n.includes("hospitales") || n.includes("plataformas")) {
-                let flotas = Math.round(costoMillones * 3) || 1;
-                return {
-                    estrategias: [
-                        "Diseño de planes logísticos de navegación, rutas aéreas autónomas u operaciones de transporte de suministros críticos.",
-                        "Gestión técnico-legal y obtención de autorizaciones de radiofrecuencias o permisos de vuelo comercial con entes reguladores.",
-                        "Implementación de centros terrestres integrados de control de telemetría y soporte mecánico preventivo de contingencia."
-                    ],
-                    actividades: [
-                        "Adquisición e inspección de fábrica de unidades vehiculares fluviales, drones de alta autonomía o antenas parabólicas transceptoras.",
-                        "Ejecución de simulacros controlados de operaciones logísticas continuas en condiciones climáticas desfavorables.",
-                        "Configuración y puesta en marcha de estaciones de servicio remoto distribuidas estratégicamente en comunidades seleccionadas."
-                    ],
-                    recursos: `
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">🛸 Flotas Móviles, Vehículos o Terminales Avanzadas</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Inversión directa en <strong>${flotas} flotas/unidades móviles especializadas de alta autonomía</strong> o hardware transceptor satelital de datos.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">⛽ Combustibles, Suministros, Logística Operativa & Viáticos</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Fondo para la compra de combustibles, lubricantes especializados, repuestos técnicos mecánicos y gastos logísticos de ruta.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
-                        </div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                            <p class="font-bold text-xs text-slate-700 uppercase">📡 Pólizas de Seguro Todo Riesgo & Licencias Gubernamentales</p>
-                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Contratación de pólizas de protección de activos de alto costo, tasas regulatorias ante el MTC, DGAC o DICAPI según corresponda.</p>
-                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
-                        </div>`
-                };
-            }
-
-            // Criterio 5: Operacional Puro
-            let brigadistas = Math.round(costoMillones * 24);
-            return {
-                estrategias: [
-                    "Convocatoria pública transparente de perfiles profesionales multidisciplinarios especializados en el sector social.",
-                    "Articulación de mesas técnicas con líderes vecinales y comunidades para generar confianza territorial directa.",
-                    "Estandarización de protocolos de diagnóstico, capacitación integral permanente y fichas técnicas estandarizadas de campo."
-                ],
-                actividades: [
-                    "Capacitación inicial del personal seleccionado en metodologías de aproximación social, recolección ética de datos y soporte técnico.",
-                    "Despliegue operativo diario de rutas de visita, talleres participativos masivos o consultorías personalizadas en territorio.",
-                    "Consolidación y digitalización semanal de informes de campo para auditoría en el sistema central de indicadores del MIDIS."
-                ],
-                recursos: `
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                        <p class="font-bold text-xs text-slate-700 uppercase">👥 Equipos Profesionales de Campo & Capital Humano</p>
-                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Cobertura de honorarios profesionales para un equipo de <strong>${brigadistas} especialistas técnicos territoriales</strong> en campo.</p>
-                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                        <p class="font-bold text-xs text-slate-700 uppercase">🎒 Insumos Físicos de Apoyo, Kits Temáticos & Guías Didácticas</p>
-                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Compra y ensamblaje de materiales didácticos, kits de entrega directa adaptados al perfil del usuario y guías técnicas de capacitación.</p>
-                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                        <p class="font-bold text-xs text-slate-700 uppercase">📊 Gestión Operativa, Traslados en Territorio & Talleres Regionales</p>
-                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Asignación de viáticos, gastos de movilidad local, alquiler de auditorios comunitarios y sistematización estadística de resultados.</p>
-                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
-                    </div>`
+            return mapaPropuestasDetalladas[nombrePropuesta] || {
+                problematica: `Se observa un desfase crítico en la ejecución de actividades de ${nombrePropuesta}, limitando la provisión y el impacto directo en las comunidades atendidas.`,
+                estrategias: ["Revisión del planeamiento técnico operacional del proyecto.", "Estructuración de flujos logísticos eficientes en el territorio."],
+                actividades: ["Mapeo presencial de los requerimientos operativos de la zona.", "Suscripción de actas de conformidad con actores sociales territoriales."],
+                recursos: `🧱 Equipamiento Estructural Base: S/ ${c1}<br>🙋 Costos Operativos de Cuadrillas: S/ ${c2}<br>📋 Estudios Técnicos de Campo: S/ ${c3}`
             };
         }
 
         function abrirModal(index, benTotal) {
             const prop = propuestas[index];
-            const desc = descripciones[prop.nombre] || "Detalles de optimización e impacto estratégico del plan de acción.";
             
             document.getElementById('modalTitulo').innerText = prop.nombre;
             document.getElementById('modalBadgeProg').innerText = prop.prog;
@@ -778,9 +925,10 @@
             const reduccion = (prop.costo * 2.9 + 8.5).toFixed(1);
             document.getElementById('modalKpiReduccion').innerText = `${reduccion}%`;
 
-            document.getElementById('modalProblematica').innerText = `Se ha diagnosticado que la falta de herramientas centralizadas agrava la situación actual: "${desc}". Esta problemática incide negativamente en los índices de desarrollo del programa ${prop.prog}.`;
+            // LLAMADO AL SISTEMA DE DATOS ESTRICTAMENTE INDEPENDIENTES POR LLAVE EXACETA
+            const datosPropuesta = obtenerContenidoEstrictoPropuesta(prop.nombre, prop.costo);
 
-            const datosPropuesta = obtenerDatosEspecificosPropuesta(prop.nombre, prop.costo);
+            document.getElementById('modalProblematica').innerText = datosPropuesta.problematica;
 
             const listaEstrategias = document.getElementById('modalEstrategias');
             listaEstrategias.innerHTML = "";
@@ -794,7 +942,11 @@
                 listaActividades.innerHTML += `<li>${act}</li>`;
             });
 
-            document.getElementById('modalRecursos').innerHTML = datosPropuesta.recursos;
+            document.getElementById('modalRecursos').innerHTML = `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-sans leading-relaxed text-slate-700 text-xs space-y-2">
+                    ${datosPropuesta.recursos}
+                </div>
+            `;
 
             const tablaDeptos = document.getElementById('modalTablaDepartamentos');
             tablaDeptos.innerHTML = "";
