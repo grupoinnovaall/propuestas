@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard MIDIS 2026 - Consolidado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Tipografía responsiva fluida */
+        h1 {
+            font-size: clamp(1.4rem, 4vw, 2.25rem);
+        }
+
+        /* KPI cards: 2 columnas en móvil, 5 en desktop */
+        #cabeceraCategorica {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            #cabeceraCategorica {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            #cabeceraCategorica {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        /* Primer card ocupa ancho completo en móvil (Inversión Global destaca) */
+        #cabeceraCategorica>div:first-child {
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 1024px) {
+            #cabeceraCategorica>div:first-child {
+                grid-column: auto;
+            }
+        }
+
+        /* Barra de filtros apilada en móvil */
+        #barraFiltros {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 1024px) {
+            #barraFiltros {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Separador entre grupos de botones */
+        #grupoPlazo {
+            border-left: none;
+            padding-left: 0;
+        }
+
+        @media (min-width: 1024px) {
+            #grupoPlazo {
+                border-left: 2px solid #e2e8f0;
+                padding-left: 1rem;
+            }
+        }
+
+        /* Botones de programa: scroll horizontal si son muchos */
+        #botonesProgramas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        /* Tabla con scroll horizontal en contenedor */
+        .tabla-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 1rem;
+        }
+
+        .tabla-wrapper table {
+            min-width: 860px;
+            width: 100%;
+        }
+
+        /* Columna Descripción se oculta en pantallas pequeñas */
+        .col-desc {
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            .col-desc {
+                display: table-cell;
+            }
+        }
+
+        /* Textos de KPI responsivos */
+        .kpi-valor {
+            font-size: clamp(1.25rem, 3vw, 1.875rem);
+        }
+
+        /* Scroll hint sutil en tabla */
+        .tabla-wrapper::after {
+            content: "";
+            display: block;
+        }
+
+        /* Pequeño indicador de scroll en móvil */
+        @media (max-width: 1023px) {
+            .scroll-hint {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                font-size: 0.7rem;
+                color: #94a3b8;
+                margin-bottom: 0.4rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .scroll-hint {
+                display: none;
+            }
+        }
+
+        /* Badges responsivos */
+        .badge {
+            white-space: nowrap;
+        }
+
+        /* Progress bar en móvil más compacta */
+        @media (max-width: 639px) {
+            td.p-4 {
+                padding: 0.6rem 0.75rem;
+            }
+
+            th.p-4 {
+                padding: 0.6rem 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-sky-100 min-h-screen p-3 sm:p-6 flex flex-col justify-between">
+    <div class="max-w-screen-2xl mx-auto w-full flex-grow">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+            <div>
+                <h1 class="font-black text-slate-800 leading-tight">Panel Estratégico MIDIS 2026</h1>
+                <p class="text-slate-500 mt-1 text-sm">Consolidado interactivo de las 50 propuestas MIDIS</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg px-5 py-3 border border-slate-200 shrink-0">
+                <p class="text-xs uppercase text-slate-400 font-bold">Estado</p>
+                <p class="text-base font-bold text-sky-700">50 propuestas activas</p>
+            </div>
+        </div>
+
+        <div id="cabeceraCategorica" class="mb-6">
+            <div class="bg-indigo-700 p-5 rounded-xl text-white shadow-lg">
+                <p class="text-indigo-200 text-xs uppercase font-bold">Inversión Global</p>
+                <p id="totalGeneral" class="kpi-valor font-black">S/ 0.0 M</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-slate-400 text-xs uppercase font-bold">Propuestas Activas</p>
+                <p id="cuentaGeneral" class="kpi-valor font-black text-slate-800">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-slate-400 text-xs uppercase font-bold">Filtro Activo</p>
+                <p id="labelFiltro" class="text-base font-bold text-sky-700 leading-tight mt-1">Todos</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-slate-400 text-xs uppercase font-bold">Beneficiarios Est.</p>
+                <p id="beneficiariosTotal" class="kpi-valor font-black text-emerald-600">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+            <div id="barraFiltros">
+                <div id="botonesProgramas">
+                    <button onclick="filtrar('prog', '')"
+                        class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-600 transition">Todos</button>
+                </div>
+                <div id="grupoPlazo" class="flex flex-wrap gap-2">
+                    <button onclick="filtrar('etapa', '')"
+                        class="px-3 py-1.5 bg-sky-600 text-white rounded-lg text-xs font-semibold transition">Todo
+                        Plazo</button>
+                    <button onclick="filtrar('etapa', 'Corto')"
+                        class="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold transition">Corto</button>
+                    <button onclick="filtrar('etapa', 'Mediano')"
+                        class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-semibold transition">Mediano</button>
+                    <button onclick="filtrar('etapa', 'Largo')"
+                        class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-semibold transition">Largo</button>
+                </div>
+                <div class="w-full lg:w-72">
+                    <input id="buscador" type="text" placeholder="Buscar propuesta..."
+                        class="w-full border border-slate-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+                        onkeyup="render()">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+            <h2 class="text-lg font-black text-slate-800 mb-3">Resumen Visual</h2>
+            <canvas id="graficoProgramas" height="90"></canvas>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-8">
+            <div class="scroll-hint px-4 pt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 5h8m-8 5h8" />
+                </svg>
+                Desliza para ver más →
+            </div>
+            <div class="tabla-wrapper">
+                <table class="text-sm">
+                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-xs">
+                        <tr>
+                            <th class="p-4 text-left whitespace-nowrap">Programa</th>
+                            <th class="p-4 text-left">Propuesta</th>
+                            <th class="p-4 text-left col-desc">Descripción</th>
+                            <th class="p-4 text-center whitespace-nowrap">Plazo</th>
+                            <th class="p-4 text-right whitespace-nowrap">Costo (M S/)</th>
+                            <th class="p-4 text-center whitespace-nowrap">Beneficiarios</th>
+                            <th class="p-4 text-center whitespace-nowrap">Impacto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="w-full max-w-screen-2xl mx-auto border-t border-slate-200 pt-4 pb-2 mt-4 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div class="flex items-center gap-1.5">
+            <span class="font-bold text-slate-700">Responsables:</span>
+            <span>Equipo Técnico</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <span class="font-bold text-slate-700">Asesor:</span>
+            <span class="bg-slate-200/70 text-slate-800 px-2.5 py-0.5 rounded-md font-medium">Mg. Tomás Agüero Correa</span>
+        </div>
+    </div>
+
+    <div id="modalDetalle" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300">
+            
+            <div class="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <span id="modalBadgeProg" class="badge bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold">PROG</span>
+                    <h3 class="font-black text-slate-800 text-base md:text-lg" id="modalTitulo">Detalle de la Propuesta</h3>
+                </div>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-6 text-sm text-slate-600">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold uppercase">Presupuesto</p>
+                        <p id="modalKpiCosto" class="text-lg font-black text-slate-800">S/ 0.0M</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold uppercase">Plazo</p>
+                        <p id="modalKpiPlazo" class="text-lg font-black text-blue-600">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold uppercase">Beneficiarios</p>
+                        <p id="modalKpiBeneficiarios" class="text-lg font-black text-emerald-600">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold uppercase">Reducción Brecha</p>
+                        <p id="modalKpiReduccion" class="text-lg font-black text-indigo-600">0%</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-sky-700 uppercase text-xs tracking-wider mb-1">1. Planteamiento de la Problemática</h4>
+                            <p id="modalProblematica" class="bg-sky-50/50 p-3 rounded-xl border border-sky-100 text-slate-700 leading-relaxed"></p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-amber-700 uppercase text-xs tracking-wider mb-1">2. Estrategias de Solución</h4>
+                            <ul id="modalEstrategias" class="list-disc pl-5 space-y-1 text-slate-700 bg-amber-50/30 p-3 rounded-xl border border-amber-100/70"></ul>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-emerald-700 uppercase text-xs tracking-wider mb-1">3. Actividades Clave</h4>
+                            <ul id="modalActividades" class="list-decimal pl-5 space-y-1 text-slate-700 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100/70"></ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-rose-700 uppercase text-xs tracking-wider mb-1">4. Recursos Requeridos (Presupuesto Analítico)</h4>
+                            <div id="modalRecursos" class="space-y-2 mt-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div>
+                    <h4 class="font-black text-slate-800 text-sm uppercase tracking-wider mb-3">Distribución Presupuestal y Metas Regionales (Perú)</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="h-64">
+                                <canvas id="graficoModalDepartamentos"></canvas>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-5 h-64 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-white shadow-inner">
+                            <table class="w-full text-xs">
+                                <thead class="bg-slate-100 sticky top-0 font-bold text-slate-600">
+                                    <tr>
+                                        <th class="p-2 text-left">Departamento</th>
+                                        <th class="p-2 text-right">Presupuesto (S/)</th>
+                                        <th class="p-2 text-right">Meta Benef.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalTablaDepartamentos" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+                <button onclick="cerrarModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const propuestas = [
+            { prog: "PEA", nombre: "Implementar depósitos inteligentes con sensores IoT para asegurar la cadena de frío y reducir pérdidas.", etapa: "Corto", costo: 1.2 },
+            { prog: "PEA", nombre: "Desarrollar software de ruteo dinámico para optimizar la distribución escolar y evitar desperdicios.", etapa: "Corto", costo: 0.9 },
+            { prog: "PEA", nombre: "Establecer menús de nutrición de precisión basados en data de anemia para mejorar la salud infantil.", etapa: "Mediano", costo: 2.1 },
+            { prog: "PEA", nombre: "Construir cocinas escolares con estándares industriales para superar la falta de infraestructura.", etapa: "Mediano", costo: 4.5 },
+            { prog: "PEA", nombre: "Crear laboratorios regionales de inocuidad alimentaria para garantizar el control de calidad.", etapa: "Mediano", costo: 3.2 },
+            { prog: "PEA", nombre: "Instaurar un sistema de acopio directo a productores regionales para reducir la dependencia externa.", etapa: "Mediano", costo: 2.8 },
+            { prog: "PEA", nombre: "Crear una red nacional de plantas de procesamiento propio para asegurar la sostenibilidad alimentaria.", etapa: "Largo", costo: 8.0 },
+            { prog: "PEA", nombre: "Implementar logística inversa de economía circular para mitigar el impacto ambiental de empaques.", etapa: "Largo", costo: 1.5 },
+            { prog: "PEA", nombre: "Desplegar un sistema de IA para monitoreo de talla y peso para reducir la desnutrición oculta.", etapa: "Largo", costo: 2.0 },
+            { prog: "PEA", nombre: "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.", etapa: "Largo", costo: 3.5 },
+            { prog: "Juntos", nombre: "Desplegar una Billetera Digital Centralizada con pago instantáneo para eliminar procesos manuales.", etapa: "Corto", costo: 1.8 },
+            { prog: "Juntos", nombre: "Movilizar brigadas de registro civil casa por casa para revertir la falta de identidad ciudadana.", etapa: "Corto", costo: 1.1 },
+            { prog: "Juntos", nombre: "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.", etapa: "Mediano", costo: 1.4 },
+            { prog: "Juntos", nombre: "Implementar registro Blockchain de transferencias para garantizar la transparencia total.", etapa: "Largo", costo: 2.5 },
+            { prog: "Juntos", nombre: "Instalar terminales satelitales en zonas remotas para combatir la exclusión digital.", etapa: "Corto", costo: 0.7 },
+            { prog: "Juntos", nombre: "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.", etapa: "Largo", costo: 5.0 },
+            { prog: "SISFOH", nombre: "Aplicar algoritmos de Machine Learning para la predicción de pobreza y corregir la focalización.", etapa: "Mediano", costo: 2.2 },
+            { prog: "SISFOH", nombre: "Lograr la interoperabilidad total con RENIEC y SUNAT para integrar la data dispersa.", etapa: "Mediano", costo: 1.9 },
+            { prog: "SISFOH", font: "normal", nombre: "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.", etapa: "Mediano", costo: 3.0 },
+            { prog: "SISFOH", nombre: "Lanzar un dashboard ciudadano de ejecución presupuestal para democratizar el acceso a la información.", etapa: "Corto", costo: 0.5 },
+            { prog: "FONCODES", nombre: "Instalar riego solar tecnificado en comunidades rurales para superar la agricultura precaria.", etapa: "Corto", costo: 2.4 },
+            { prog: "FONCODES", nombre: "Crear incubadoras de negocios de transformación para generar valor agregado a la producción.", etapa: "Mediano", costo: 1.6 },
+            { prog: "FONCODES", nombre: "Instalar torres de niebla y cosecha de lluvia avanzada para solucionar la falta de agua.", etapa: "Largo", costo: 4.0 },
+            { prog: "FONCODES", nombre: "Implementar centros de economía circular para gestionar los residuos rurales eficientemente.", etapa: "Mediano", costo: 1.2 },
+            { prog: "FONCODES", nombre: "Lanzar un marketplace digital de productos artesanales para dinamizar los mercados nulos.", etapa: "Largo", costo: 0.8 },
+            { prog: "FONCODES", nombre: "Conectar viveros de empresas rurales mediante satélite para mejorar la conectividad productiva.", etapa: "Corto", costo: 1.0 },
+            { prog: "FONCODES", nombre: "Desarrollar logística de carga inteligente para optimizar el transporte de productores.", etapa: "Largo", costo: 2.0 },
+            { prog: "FONCODES", nombre: "Implementar sistemas de hidroponía escolar y comunitaria para combatir la escasez de alimentos.", etapa: "Mediano", costo: 1.3 },
+            { prog: "Cuna Más", nombre: "Construir centros infantiles con arquitectura resiliente para garantizar una infraestructura segura.", etapa: "Mediano", costo: 5.5 },
+            { prog: "Cuna Más", nombre: "Aplicar monitoreo biométrico y pedagógico IoT para revertir la falta de estimulación temprana.", etapa: "Mediano", costo: 2.0 },
+            { prog: "Cuna Más", nombre: "Ejecutar ampliaciones modulares de centros de cuidado para eliminar el hacinamiento.", etapa: "Corto", costo: 3.2 },
+            { prog: "Cuna Más", nombre: "Instalar cocinas ecológicas con sensores de aire para reducir la desnutrición y riesgos respiratorios.", etapa: "Corto", costo: 1.5 },
+            { prog: "Cuna Más", nombre: "Desplegar app nacional de hitos de desarrollo cognitivo para realizar un seguimiento efectivo.", etapa: "Mediano", costo: 0.6 },
+            { prog: "Cuna Más", nombre: "Implementar sistemas de alerta temprana en guarderías para fortalecer la seguridad infantil.", etapa: "Corto", costo: 0.9 },
+            { prog: "Cuna Más", nombre: "Otorgar becas de especialización para cuidadores para elevar la calidad de la capacitación.", etapa: "Mediano", costo: 1.1 },
+            { prog: "Pensión 65", nombre: "Crear una red nacional de centros de salud activa para romper el aislamiento del adulto mayor.", etapa: "Largo", costo: 4.5 },
+            { prog: "Pensión 65", nombre: "Entregar tabletas con interfaz adaptada y conexión para reducir la brecha digital en ancianos.", etapa: "Corto", costo: 1.8 },
+            { prog: "Pensión 65", nombre: "Ejecutar acondicionamiento térmico de viviendas rurales para proteger contra las heladas.", etapa: "Corto", costo: 3.5 },
+            { prog: "Pensión 65", nombre: "Implementar un programa de relevo familiar para el soporte a cuidadores de adultos mayores.", etapa: "Mediano", costo: 1.2 },
+            { prog: "Pensión 65", nombre: "Realizar tamizaje móvil preventivo masivo para fortalecer la salud preventiva rural.", etapa: "Corto", costo: 2.0 },
+            { prog: "Contigo", nombre: "Crear una bolsa de empleo adaptada para discapacidad para combatir el desempleo especializado.", etapa: "Mediano", costo: 1.0 },
+            { prog: "Contigo", nombre: "Formar una red de promotores locales de salud mental para atender esta problemática crítica.", etapa: "Mediano", costo: 1.5 },
+            { prog: "Contigo", nombre: "Distribuir kits de asistencia técnica personalizada para mejorar la movilidad individual.", etapa: "Corto", costo: 0.8 },
+            { prog: "Contigo", nombre: "Otorgar becas de formación técnica inclusiva para mejorar la educación y empleabilidad.", etapa: "Largo", costo: 2.0 },
+            { prog: "Contigo", nombre: "Adaptar espacios públicos inclusivos para mejorar la infraestructura de acceso universal.", etapa: "Largo", costo: 3.5 },
+            { prog: "PAIS", nombre: "Operar hospitales fluviales con telemedicina para superar la inaccesibilidad geográfica.", etapa: "Largo", costo: 6.0 },
+            { prog: "PAIS", nombre: "Implementar farmacia por drones para vencer la distancia en zonas aisladas.", etapa: "Mediano", costo: 2.5 },
+            { prog: "PAIS", nombre: "Activar una red de alerta temprana vía mensajería para gestionar emergencias oportunamente.", etapa: "Corto", costo: 0.4 },
+            { prog: "PAIS", nombre: "Desplegar plataformas itinerantes multi-servicio para acercar los servicios estatales.", etapa: "Mediano", costo: 3.0 },
+            { prog: "PAIS", nombre: "Instalar nodos de Wi-Fi social en plazas públicas para garantizar la conectividad comunitaria.", etapa: "Corto", costo: 1.2 }
+        ];
+
+        const descripciones = {
+            "Implementar depósitos inteligentes con sensores IoT para asegurar la cadena de frío y reducir pérdidas.": "Uso de sensores IoT para monitorear temperatura y humedad en tiempo real, garantizando la conservación adecuada de alimentos distribuidos en programas escolares.",
+            "Desarrollar software de ruteo dinámico para optimizar la distribución escolar y evitar desperdicios.": "Sistema digital que optimiza rutas de entrega considerando tráfico, clima y ubicación de escuelas para reducir retrasos y pérdidas alimentarias.",
+            "Establecer menús de nutrición de precisión basados en data de anemia para mejorar la salud infantil.": "Diseño de menús focalizados utilizando información epidemiológica de anemia y desnutrición infantil reportada por el MINSA.",
+            "Construir cocinas escolares con estándares industriales para superar la falta de infraestructura.": "Mejoramiento de cocinas escolares con equipamiento industrial, ventilación adecuada y espacios seguros para preparación de alimentos.",
+            "Crear laboratorios regionales de inocuidad alimentaria para garantizar el control de calidad.": "Implementación de laboratorios descentralizados para análisis microbiológicos y control sanitario de productos alimenticios.",
+            "Instaurar un sistema de acopio directo a productores regionales para reducir la dependencia externa.": "Compra directa a pequeños productores agrícolas locales para fortalecer economías regionales y asegurar abastecimiento fresco.",
+            "Crear una red nacional de plantas de procesamiento propio para asegurar la sostenibilidad alimentaria.": "Desarrollo de infraestructura para procesamiento and almacenamiento de alimentos destinados a programas sociales.",
+            "Implementar logística inversa de economía circular para mitigar el impacto ambiental de empaques.": "Recuperación y reciclaje de empaques utilizados en distribución alimentaria mediante cadenas de economía circular.",
+            "Desplegar un sistema de IA para monitoreo de talla y peso para reducir la desnutrición oculta.": "Uso de inteligencia artificial para identificar riesgos nutricionales mediante seguimiento automatizado de indicadores antropométricos.",
+            "Instalar cocinas solares masivas para mejorar la salud laboral y reducir emisiones.": "Implementación de cocinas solares en zonas rurales para disminuir consumo de combustibles contaminantes y mejorar condiciones de salud.",
+            "Desplegar una Billetera Digital Centralizada con pago instantáneo para eliminar procesos manuales.": "Sistema de pagos digitales interoperables para transferencias rápidas y seguras a beneficiarios del programa.",
+            "Movilizar brigadas de registro civil casa por casa para revertir la falta de identidad ciudadana.": "Campañas itinerantes para facilitar inscripción y actualización de documentos de identidad en zonas rurales.",
+            "Crear una Ventanilla única de atención para reducir la burocracia y mejorar el servicio.": "Integración de trámites sociales y atención ciudadana en un único punto físico y digital.",
+            "Implementar registro Blockchain de transferencias para garantizar la transparencia total.": "Uso de tecnología blockchain para trazabilidad y control transparente de subsidios y transferencias económicas.",
+            "Instalar terminales satelitales en zonas remotas para combatir la exclusión digital.": "Conectividad satelital en comunidades alejadas para acceso a servicios estatales y plataformas digitales.",
+            "Crear un fondo de garantía para emprendimientos locales para disminuir la dependencia económica.": "Fondo orientado a respaldar créditos y proyectos productivos de familias vulnerables.",
+            "Aplicar algoritmos de Machine Learning para la predicción de pobreza y corregir la focalización.": "Modelos predictivos basados en datos socioeconómicos para mejorar la clasificación de hogares vulnerables.",
+            "Lograr la interoperabilidad total con RENIEC y SUNAT para integrar la data dispersa.": "Integración de bases de datos estatales para actualizar información socioeconómica en tiempo real.",
+            "Ejecutar un mapeo satelital de vulnerabilidad social para actualizar el estado de los hogares.": "Uso de imágenes satelitales y georreferenciación para identificar zonas con alta vulnerabilidad social.",
+            "Lanzar un dashboard ciudadano de ejecución presupuestal para democratizar el acceso a la información.": "Portal de transparencia para visualizar ejecución presupuestal y avance de programas sociales.",
+            "Instalar riego solar tecnificado en comunidades rurales para superar la agricultura precaria.": "Sistemas de riego alimentados con energía solar para incrementar productividad agrícola rural.",
+            "Crear incubadoras de negocios de transformación para generar valor agregado a la producción.": "Espacios de capacitación y asesoría para impulsar emprendimientos rurales y agroindustriales.",
+            "Instalar torres de niebla y cosecha de lluvia avanzada para solucionar la falta de agua.": "Infraestructura de captación hídrica para abastecimiento en comunidades afectadas por escasez de agua.",
+            "Implementar centros de economía circular para gestionar los residuos rurales eficientemente.": "Centros de reciclaje y reutilización de residuos para reducir contaminación en zonas rurales.",
+            "Lanzar un marketplace digital de productos artesanales para dinamizar los mercados nulos.": "Plataforma digital de comercialización para artesanos y productores rurales.",
+            "Conectar viveros de empresas rurales mediante satélite para mejorar la conectividad productiva.": "Conectividad digital para fortalecer redes de emprendimiento y asistencia técnica rural.",
+            "Desarrollar logística de carga inteligente para optimizar el transporte de productores.": "Sistemas de gestión logística para mejorar distribución y comercialización agrícola.",
+            "Implementar sistemas de hidroponía escolar y comunitaria para combatir la escasez de alimentos.": "Cultivos hidropónicos en escuelas y comunidades para mejorar seguridad alimentaria.",
+            "Construir centros infantiles con arquitectura resiliente para garantizar una infraestructura segura.": "Infraestructura infantil adaptada a riesgos climáticos y condiciones de seguridad.",
+            "Aplicar monitoreo biométrico y pedagógico IoT para revertir la falta de estimulación temprana.": "Seguimiento del desarrollo infantil mediante dispositivos tecnológicos y evaluación pedagógica.",
+            "Ejecutar ampliaciones modulares de centros de cuidado para eliminar el hacinamiento.": "Expansión modular de espacios de atención infantil en zonas con alta demanda.",
+            "Instalar cocinas ecológicas con sensores de aire para reducir la desnutrición y riesgos respiratorios.": "Cocinas mejoradas con control de calidad del aire para reducir contaminación intradomiciliaria.",
+            "Desplegar app nacional de hitos de desarrollo cognitivo para realizar un seguimiento efectivo.": "Aplicación móvil para monitorear el desarrollo infantil y orientar a cuidadores.",
+            "Implementar sistemas de alerta temprana en guarderías para fortalecer la seguridad infantil.": "Sensores y protocolos automatizados para prevenir riesgos en centros infantiles.",
+            "Otorgar becas de especialización para cuidadores para elevar la calidad de la capacitación.": "Programas de formación técnica y especialización dirigidos a cuidadores infantiles.",
+            "Crear una red nacional de centros de salud activa para romper el aislamiento del adulto mayor.": "Centros integrales para atención médica, recreación y acompañamiento del adulto mayor.",
+            "Entregar tabletas con interfaz adaptada y conexión para reducir la brecha digital en ancianos.": "Dispositivos con accesibilidad simplificada para inclusión digital de adultos mayores.",
+            "Ejecutar acondicionamiento térmico de viviendas rurales para proteger contra las heladas.": "Mejoramiento térmico de viviendas en zonas altoandinas vulnerables a bajas temperaturas.",
+            "Implementar un programa de relevo familiar para el soporte a cuidadores de adultos mayores.": "Servicio temporal de apoyo a familias responsables del cuidado de adultos mayores dependientes.",
+            "Realizar tamizaje móvil preventivo masivo para fortalecer la salud preventiva rural.": "Campañas móviles de detección temprana de enfermedades en comunidades rurales.",
+            "Crear una bolsa de empleo adaptada para discapacidad para combatir el desempleo especializado.": "Plataforma laboral inclusiva para personas con discapacidad con vacantes accesibles.",
+            "Formar una red de promotores locales de salud mental para atender esta problemática crítica.": "Capacitación comunitaria para prevención y atención básica de salud mental.",
+            "Distribuir kits de asistencia técnica personalizada para mejorar la movilidad individual.": "Entrega de ayudas técnicas adaptadas a necesidades de movilidad y autonomía.",
+            "Otorgar becas de formación técnica inclusiva para mejorar la educación y empleabilidad.": "Becas orientadas a capacitación técnica accesible para personas con discapacidad.",
+            "Adaptar espacios públicos inclusivos para mejorar la infraestructura de acceso universal.": "Adecuación de infraestructura pública bajo criterios de accesibilidad universal.",
+            "Operar hospitales fluviales con telemedicina para superar la inaccesibilidad geográfica.": "Embarcaciones equipadas con servicios médicos y telemedicina para atención amazónica.",
+            "Implementar farmacia por drones para vencer la distancia en zonas aisladas.": "Distribución de medicamentos mediante drones en comunidades de difícil acceso.",
+            "Activar una red de alerta temprana vía mensajería para gestionar emergencias oportunamente.": "Sistema de mensajería masiva para alertas climáticas y emergencias comunitarias.",
+            "Desplegar plataformas itinerantes multi-servicio para acercar los servicios estatales.": "Plataformas móviles que brindan servicios de salud, identidad y programas sociales.",
+            "Instalar nodos de Wi-Fi social en plazas públicas para garantizar la conectividad comunitaria.": "Puntos gratuitos de acceso a internet en espacios públicos rurales y urbanos vulnerables."
+        };
+
+        let filtros = { prog: "", etapa: "" };
+
+        const progs = [...new Set(propuestas.map(p => p.prog))];
+        progs.forEach(p => {
+            document.getElementById('botonesProgramas').innerHTML +=
+                `<button onclick="filtrar('prog','${p}')" class="px-3 py-1.5 bg-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">${p}</button>`;
+        });
+
+        function filtrar(tipo, valor) {
+            filtros[tipo] = valor;
+            render();
+        }
+
+        function render() {
+            const body = document.getElementById('tablaBody');
+            body.innerHTML = "";
+            const texto = document.getElementById('buscador').value.toLowerCase();
+
+            let filtradas = propuestas.filter(p =>
+                (!filtros.prog || p.prog === filtros.prog) &&
+                (!filtros.etapa || p.etapa === filtros.etapa) &&
+                p.nombre.toLowerCase().includes(texto)
+            );
+
+            let totalCosto = 0, totalBeneficiarios = 0;
+
+            filtradas.forEach((p, i) => {
+                const beneficiarios = 50000 + i * 3500;
+                const impacto = p.costo >= 3 ? "Muy Alto" : p.costo >= 1.5 ? "Alto" : "Medio";
+                totalCosto += p.costo;
+                totalBeneficiarios += beneficiarios;
+
+                const indiceAbsoluto = propuestas.findIndex(item => item.nombre === p.nombre);
+
+                body.innerHTML += `
+            <tr onclick="abrirModal(${indiceAbsoluto}, ${beneficiarios})" class="hover:bg-sky-50 transition-colors duration-150 cursor-pointer">
+                <td class="p-4 whitespace-nowrap">
+                    <span class="badge bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-xs font-bold">${p.prog}</span>
+                </td>
+                <td class="p-4 font-semibold text-slate-700 leading-5 text-xs sm:text-sm" style="max-width:260px;min-width:160px">${p.nombre}</td>
+                <td class="p-4 text-slate-500 text-xs col-desc" style="max-width:220px">${descripciones[p.nombre] || "Descripción no disponible."}</td>
+                <td class="p-4 text-center whitespace-nowrap">
+                    <span class="badge px-2 py-1 rounded-full text-xs font-bold
+                        ${p.etapa === 'Corto' ? 'bg-blue-100 text-blue-700' : ''}
+                        ${p.etapa === 'Mediano' ? 'bg-amber-100 text-amber-700' : ''}
+                        ${p.etapa === 'Largo' ? 'bg-red-100 text-red-700' : ''}">
+                        ${p.etapa}
+                    </span>
+                </td>
+                <td class="p-4 text-right font-black text-slate-700 whitespace-nowrap">${p.costo.toFixed(1)}</td>
+                <td class="p-4 text-center font-semibold text-emerald-700 whitespace-nowrap text-xs">${beneficiarios.toLocaleString()}</td>
+                <td class="p-4 text-center whitespace-nowrap">
+                    <span class="badge px-2 py-1 rounded-full text-xs font-bold
+                        ${impacto === 'Muy Alto' ? 'bg-red-100 text-red-700' : ''}
+                        ${impacto === 'Alto' ? 'bg-amber-100 text-amber-700' : ''}
+                        ${impacto === 'Medio' ? 'bg-slate-100 text-slate-700' : ''}">
+                        ${impacto}
+                    </span>
+                </td>
+            </tr>`;
+            });
+
+            document.getElementById('totalGeneral').innerText = `S/ ${totalCosto.toFixed(1)} M`;
+            document.getElementById('cuentaGeneral').innerText = filtradas.length;
+            document.getElementById('beneficiariosTotal').innerText = totalBeneficiarios.toLocaleString();
+            document.getElementById('labelFiltro').innerText = (filtros.prog || "Todos") + " / " + (filtros.etapa || "Todo Plazo");
+            actualizarGrafico(filtradas);
+        }
+
+        let chart;
+        function actualizarGrafico(data) {
+            const resumen = {};
+            data.forEach(p => { resumen[p.prog] = (resumen[p.prog] || 0) + p.costo; });
+            const ctx = document.getElementById('graficoProgramas');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(resumen),
+                    datasets: [{
+                        label: 'Inversión (Millones S/)',
+                        data: Object.values(resumen),
+                        borderRadius: 8,
+                        backgroundColor: ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grace: '10%'
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'valueLabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx } = chart;
+                        ctx.save();
+                        ctx.font = 'bold 12px Arial';
+                        ctx.fillStyle = '#1e293b';
+                        ctx.textAlign = 'center';
+
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const value = dataset.data[index];
+                                ctx.fillText(value.toFixed(1), bar.x, bar.y - 10);
+                            });
+                        });
+
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+        // --- SISTEMA INTERACTIVO REGIONAL DEL MODAL ---
+        let chartModal;
+        const departamentosPeru = [
+            "Amazonas", "Ancash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca", "Callao", "Cusco", 
+            "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad", "Lambayeque", "Lima", "Loreto", 
+            "Madre de Dios", "Moquegua", "Pasco", "Piura", "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali"
+        ];
+
+        const pesosRegionales = [
+            3.5, 4.2, 4.8, 3.1, 5.2, 5.5, 2.1, 4.0, 5.8, 5.0, 2.8, 4.1, 4.5, 3.9, 8.5, 5.4, 
+            2.0, 1.8, 3.6, 5.1, 5.6, 4.3, 2.2, 2.5, 3.9
+        ];
+        const sumaPesos = pesosRegionales.reduce((a, b) => a + b, 0);
+
+        // MOTOR CONTEXTUAL: RETORNA LAS ESTRATEGIAS, ACTIVIDADES Y RECURSOS EXCLUSIVOS SEGÚN LA PROPUESTA
+        function obtenerDatosEspecificosPropuesta(nombrePropuesta, costoMillones) {
+            const n = nombrePropuesta.toLowerCase();
+            const presupuestoSoles = costoMillones * 1000000;
+
+            let c1 = Math.round(presupuestoSoles * 0.45).toLocaleString();
+            let c2 = Math.round(presupuestoSoles * 0.35).toLocaleString();
+            let c3 = Math.round(presupuestoSoles * 0.20).toLocaleString();
+
+            // Criterio 1: Internet de las Cosas (Sensórica, IoT, Biometría)
+            if (n.includes("iot") || n.includes("sensores") || n.includes("medición") || n.includes("biométrico")) {
+                let hardwareCant = Math.round(costoMillones * 320);
+                return {
+                    estrategias: [
+                        "Diseño arquitectónico de redes inalámbricas de ultra bajo consumo de energía en entornos rurales aislados.",
+                        "Homologación internacional y calibración de celdas de medición y telemetría bajo estándares de inmunidad electromagnética.",
+                        "Establecimiento de convenios estratégicos de transmisión con empresas de telecomunicaciones para ancho de banda dedicado."
+                    ],
+                    actividades: [
+                        "Instalación en campo de terminales físicos periféricos y antenas receptoras con protección climática IP67.",
+                        "Despliegue distribuido de gateways concentradores y pruebas de redundancia ante pérdida de energía eléctrica.",
+                        "Integración de las tramas de datos crudos mediante APIs hacia el centro de monitoreo principal del MIDIS."
+                    ],
+                    recursos: `
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">💻 Hardware & Dispositivos Periféricos</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Adquisición de <strong>${hardwareCant} unidades</strong> de sensores de telemetría IoT industriales calibrados y microcontroladores.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">👷 Talento, Ingeniería de Redes & Despliegue</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Honorarios para <strong>04 Ingenieros de Sistemas IoT</strong> y Arquitectos Cloud por un periodo continuo de 8 meses.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">📡 Infraestructura TI, Servidores & Planes de Datos</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Licenciamiento Cloud empresarial y contratos corporativos de transmisión celular M2M por 12 meses de servicio.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
+                        </div>`
+                };
+            }
+
+            // Criterio 2: Informática, Apps, Algoritmos, Software, AI, Blockchain, Marketplace, Dashboard
+            if (n.includes("software") || n.includes("ruteo") || n.includes("algoritmos") || n.includes("machine learning") || n.includes("ia") || n.includes("billetera") || n.includes("blockchain") || n.includes("app") || n.includes("marketplace") || n.includes("dashboard")) {
+                let clusters = Math.round(costoMillones * 2.5) || 1;
+                return {
+                    estrategias: [
+                        "Diseño conceptual basado en microservicios contenerizados y arquitectura serverless escalable de alta disponibilidad.",
+                        "Implementación de estrictos esquemas de encriptación simétrica/asimétrica en tránsito y en reposo para protección de datos sensibles.",
+                        "Establecimiento de metodologías ágiles (Scrum) con ciclos iterativos quincenales para testing modular activo."
+                    ],
+                    actividades: [
+                        "Modelamiento relacional y no relacional de grandes bases de datos centralizadas con indexación optimizada.",
+                        "Codificación de algoritmos avanzados, dashboards interactivos y desarrollo de interfaces de usuario adaptadas a baja conectividad.",
+                        "Ejecución obligatoria de auditorías externas de ciberseguridad, pruebas de penetración (PenTesting) y corrección de vulnerabilidades."
+                    ],
+                    recursos: `
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">💻 Desarrollo de Software & Arquitectura Devops</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Contratación de <strong>01 Software Factory Líder</strong> (03 Programadores Fullstack, 01 Científico de Datos, 01 Analista QA).</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">☁️ Entornos Cloud y Nodos de Cómputo Redundantes</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Aprovisionamiento de <strong>${clusters} Clusters empresariales AWS/Azure</strong> resilientes de alta concurrencia.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">🛡️ Certificaciones, Ethical Hacking & Capacitaciones</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Adquisición de certificados criptográficos SSL, licencias corporativas y talleres técnicos presenciales de despliegue.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
+                        </div>`
+                };
+            }
+
+            // Criterio 3: Construcción, Obras Físicas, Plantas, Cocinas, Centros, Infraestructura Estructural
+            if (n.includes("cocinas") || n.includes("centros") || n.includes("infraestructura") || n.includes("viviendas") || n.includes("riego solar") || n.includes("torres de niebla") || n.includes("plantas") || n.includes("espacios públicos")) {
+                let modulos = Math.round(costoMillones * 12);
+                return {
+                    estrategias: [
+                        "Elaboración de expedientes técnicos detallados de ingeniería civil, hidráulica y eléctrica ajustados a la geografía de cada zona.",
+                        "Establecimiento de una cadena centralizada de compras y provisión de materiales con certificación sismorresistente.",
+                        "Coordinación interinstitucional con municipalidades de la región para la agilización y saneamiento legal de terrenos fiscales."
+                    ],
+                    actividades: [
+                        "Movilización de maquinarias pesadas, nivelación técnica de suelos y cimentación estructural bajo normativas vigentes.",
+                        "Montaje de estructuras modulares autoportantes, techados con aislamiento térmico e instalaciones de redes sanitarias internas.",
+                        "Pruebas de carga de fluidos, equipamiento electromecánico y entrega formal de la obra con actas de conformidad técnica."
+                    ],
+                    recursos: `
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">🧱 Obras Civiles & Adquisición de Materiales Base</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Fondos asignados a la edificación y habilitación de <strong>${modulos} unidades estructurales físicas modulares</strong> de alta resistencia.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">⚙️ Maquinarias Pesadas & Equipamiento Tecnológico Interno</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Suministro y montaje de sistemas mecánicos industriales, matrices de paneles solares fotovoltaicos o herramental de planta.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">📋 Inspecciones de Seguridad, Estudios Ambientales & Residentes</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Financiamiento de honorarios de Residentes y Supervisores de Obra, certificaciones de INDECI y estudios de impacto ambiental.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
+                        </div>`
+                };
+            }
+
+            // Criterio 4: Logística Móvil Avanzada, Hospitales Fluviales, Drones, Terminales Satelitales, Wi-Fi Nodos
+            if (n.includes("satelitales") || n.includes("satelital") || n.includes("drones") || n.includes("wi-fi") || n.includes("nodos") || n.includes("hospitales") || n.includes("plataformas")) {
+                let flotas = Math.round(costoMillones * 3) || 1;
+                return {
+                    estrategias: [
+                        "Diseño de planes logísticos de navegación, rutas aéreas autónomas u operaciones de transporte de suministros críticos.",
+                        "Gestión técnico-legal y obtención de autorizaciones de radiofrecuencias o permisos de vuelo comercial con entes reguladores.",
+                        "Implementación de centros terrestres integrados de control de telemetría y soporte mecánico preventivo de contingencia."
+                    ],
+                    actividades: [
+                        "Adquisición e inspección de fábrica de unidades vehiculares fluviales, drones de alta autonomía o antenas parabólicas transceptoras.",
+                        "Ejecución de simulacros controlados de operaciones logísticas continuas en condiciones climáticas desfavorables.",
+                        "Configuración y puesta en marcha de estaciones de servicio remoto distribuidas estratégicamente en comunidades seleccionadas."
+                    ],
+                    recursos: `
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">🛸 Flotas Móviles, Vehículos o Terminales Avanzadas</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Inversión directa en <strong>${flotas} flotas/unidades móviles especializadas de alta autonomía</strong> o hardware transceptor satelital de datos.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">⛽ Combustibles, Suministros, Logística Operativa & Viáticos</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Fondo para la compra de combustibles, lubricantes especializados, repuestos técnicos mecánicos y gastos logísticos de ruta.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <p class="font-bold text-xs text-slate-700 uppercase">📡 Pólizas de Seguro Todo Riesgo & Licencias Gubernamentales</p>
+                            <p class="text-slate-600 mt-0.5 font-mono text-xs">• Contratación de pólizas de protección de activos de alto costo, tasas regulatorias ante el MTC, DGAC o DICAPI según corresponda.</p>
+                            <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
+                        </div>`
+                };
+            }
+
+            // Criterio 5: Operacional Puro
+            let brigadistas = Math.round(costoMillones * 24);
+            return {
+                estrategias: [
+                    "Convocatoria pública transparente de perfiles profesionales multidisciplinarios especializados en el sector social.",
+                    "Articulación de mesas técnicas con líderes vecinales y comunidades para generar confianza territorial directa.",
+                    "Estandarización de protocolos de diagnóstico, capacitación integral permanente y fichas técnicas estandarizadas de campo."
+                ],
+                actividades: [
+                    "Capacitación inicial del personal seleccionado en metodologías de aproximación social, recolección ética de datos y soporte técnico.",
+                    "Despliegue operativo diario de rutas de visita, talleres participativos masivos o consultorías personalizadas en territorio.",
+                    "Consolidación y digitalización semanal de informes de campo para auditoría en el sistema central de indicadores del MIDIS."
+                ],
+                recursos: `
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <p class="font-bold text-xs text-slate-700 uppercase">👥 Equipos Profesionales de Campo & Capital Humano</p>
+                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Cobertura de honorarios profesionales para un equipo de <strong>${brigadistas} especialistas técnicos territoriales</strong> en campo.</p>
+                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c1}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <p class="font-bold text-xs text-slate-700 uppercase">🎒 Insumos Físicos de Apoyo, Kits Temáticos & Guías Didácticas</p>
+                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Compra y ensamblaje de materiales didácticos, kits de entrega directa adaptados al perfil del usuario y guías técnicas de capacitación.</p>
+                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c2}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <p class="font-bold text-xs text-slate-700 uppercase">📊 Gestión Operativa, Traslados en Territorio & Talleres Regionales</p>
+                        <p class="text-slate-600 mt-0.5 font-mono text-xs">• Asignación de viáticos, gastos de movilidad local, alquiler de auditorios comunitarios y sistematización estadística de resultados.</p>
+                        <p class="text-right text-rose-600 font-bold font-mono text-xs mt-0.5">S/ ${c3}</p>
+                    </div>`
+            };
+        }
+
+        function abrirModal(index, benTotal) {
+            const prop = propuestas[index];
+            const desc = descripciones[prop.nombre] || "Detalles de optimización e impacto estratégico del plan de acción.";
+            
+            document.getElementById('modalTitulo').innerText = prop.nombre;
+            document.getElementById('modalBadgeProg').innerText = prop.prog;
+            document.getElementById('modalKpiCosto').innerText = `S/ ${prop.costo.toFixed(1)} M`;
+            document.getElementById('modalKpiPlazo').innerText = prop.etapa;
+            document.getElementById('modalKpiBeneficiarios').innerText = benTotal.toLocaleString();
+            
+            const reduccion = (prop.costo * 2.9 + 8.5).toFixed(1);
+            document.getElementById('modalKpiReduccion').innerText = `${reduccion}%`;
+
+            document.getElementById('modalProblematica').innerText = `Se ha diagnosticado que la falta de herramientas centralizadas agrava la situación actual: "${desc}". Esta problemática incide negativamente en los índices de desarrollo del programa ${prop.prog}.`;
+
+            const datosPropuesta = obtenerDatosEspecificosPropuesta(prop.nombre, prop.costo);
+
+            const listaEstrategias = document.getElementById('modalEstrategias');
+            listaEstrategias.innerHTML = "";
+            datosPropuesta.estrategias.forEach(est => {
+                listaEstrategias.innerHTML += `<li>${est}</li>`;
+            });
+
+            const listaActividades = document.getElementById('modalActividades');
+            listaActividades.innerHTML = "";
+            datosPropuesta.actividades.forEach(act => {
+                listaActividades.innerHTML += `<li>${act}</li>`;
+            });
+
+            document.getElementById('modalRecursos').innerHTML = datosPropuesta.recursos;
+
+            const tablaDeptos = document.getElementById('modalTablaDepartamentos');
+            tablaDeptos.innerHTML = "";
+            
+            let labelsGrafico = [];
+            let datosGrafico = [];
+
+            departamentosPeru.forEach((depto, i) => {
+                let factor = pesosRegionales[i] / sumaPesos;
+                let deptoPresupuesto = prop.costo * factor * 1000000;
+                let deptoBen = Math.round(benTotal * factor);
+
+                labelsGrafico.push(depto);
+                datosGrafico.push(Number((deptoPresupuesto / 1000).toFixed(1)));
+
+                tablaDeptos.innerHTML += `
+                    <tr>
+                        <td class="p-2 font-semibold text-slate-700">${depto}</td>
+                        <td class="p-2 text-right font-mono font-bold text-slate-900">S/ ${Math.round(deptoPresupuesto).toLocaleString()}</td>
+                        <td class="p-2 text-right text-emerald-600 font-medium">${deptoBen.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            const ctxModal = document.getElementById('graficoModalDepartamentos').getContext('2d');
+            if (chartModal) chartModal.destroy();
+
+            chartModal = new Chart(ctxModal, {
+                type: 'line',
+                data: {
+                    labels: labelsGrafico,
+                    datasets: [{
+                        label: 'Asignación (Miles de S/ )',
+                        data: datosGrafico,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0ea5e9',
+                        tension: 0.2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { font: { size: 8 }, maxRotation: 90, minRotation: 45 } },
+                        y: { beginAtZero: true, ticks: { font: { size: 9 } } }
+                    }
+                }
+            });
+
+            const modal = document.getElementById('modalDetalle');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function cerrarModal() {
+            const modal = document.getElementById('modalDetalle');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        render();
+    </script>
+</body>
+
+</html>
